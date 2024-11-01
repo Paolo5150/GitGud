@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Client</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="container">
+        <h1 id="title">Git Good</h1>
+        <div class="button-group">
+            <button class="pull" onclick="gitAction('pull')">Pull</button>
+            <button class="push" onclick="gitAction('push')">Push</button>
+            <button class="status" onclick="gitAction('status')">Status</button>
+        </div>
+       
+        <pre id="output" style="margin-top: 20px; color: #333;"></pre>
+    </div>
+    <textarea class="logs" id="logArea" rows="10"  placeholder="Logs will appear here..." readonly></textarea>
+    <script src="renderer.ts"></script>
+</body>
+</html>
