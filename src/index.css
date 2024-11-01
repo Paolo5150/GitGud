@@ -1,53 +1,87 @@
-body {
-  font-family: Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  margin: 0;
-  background-color: #f5f5f5;
-}
-.container {
-  width: 90%;
-  border-radius: 10px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: red;
+* {
+  box-sizing: border-box;
 }
 
-#title {
-  text-align: center;
-  color: #7e4b4b;
+html, body {
+  height: 100%; /* Ensure html and body take full height */
+  margin: 0; /* Remove default margin */
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+}
+
+.container {
+  max-width: 800px;
+  height: 100%; /* Set the height to 100% of the viewport */
+  margin: 0 auto; /* Center the container horizontally */
+  padding: 20px;
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
   text-align: center;
   color: #333;
 }
-.button-group {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-button {
-  padding: 10px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  color: white;
-}
-.pull { background-color: #4caf50; }
-.push { background-color: #2196f3; }
-.status { background-color: #fbc02d; }
 
-.logs
-{
-  padding: 10px;
-  font-size: 14px;
-  width: 90%;
-  border: 1px solid #ccc;
+.main-content {
+  display: flex; /* Flexbox layout for left and right areas */
+  flex-grow: 1; /* Allow this section to grow and fill the available space */
+}
+
+.left-area, .right-area {
+  flex: 1; /* Take equal space */
+  margin: 10px; /* Margin between the areas */
+  padding: 15px;
+  border: 1px solid #ddd;
   border-radius: 5px;
-  resize: vertical; /* Allow vertical resizing only */
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  background-color: #fafafa;
+}
+
+.repo-info, .branch-info, .changes-info, .untracked-info {
+  margin-bottom: 20px;
+}
+
+h2, h3 {
+  margin: 0;
+  color: #444;
+}
+
+#branchList, #changesList, #untrackedList {
+  list-style-type: none;
+  padding: 0;
+}
+
+#branchList li, #changesList li, #untrackedList li {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+#branchList li:last-child, #changesList li:last-child, #untrackedList li:last-child {
+  border-bottom: none;
+}
+
+.changes-container {
+  display: flex;
+  flex-direction: column; /* Stack Local Changes and Untracked Files vertically */
+  height: 100%; /* Full height of the right area */
+}
+
+.changes-info, .untracked-info {
+  flex: 1; /* Each section takes equal space in the right area */
+  margin-bottom: 10px; /* Space between the two sections */
+}
+
+.logs {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  resize: none;
+  font-family: monospace;
+  background-color: #f9f9f9;
+  color: #333;
+  margin-top: 20px; /* Space between the main content and log area */
 }

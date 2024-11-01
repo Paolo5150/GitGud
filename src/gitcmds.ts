@@ -30,13 +30,13 @@ export async function GitStatus(window: Electron.BrowserWindow)
 
 }
 
-export async function GitUntrackedFiles(window: Electron.BrowserWindow)
+export async function GitUntrackedFiles()
 {
     const res:string = await GitCmd("ls-files --others --exclude-standard")
-    window.webContents.send('update-log',res)
+    return res;
 }
 
-export async function GitIsRepoValid(window: Electron.BrowserWindow) : Promise<boolean>
+export async function GitIsRepoValid() : Promise<boolean>
 {
     const res:string = await GitCmd("rev-parse --is-inside-work-tree")
     return res == 'true';
@@ -45,5 +45,23 @@ export async function GitIsRepoValid(window: Electron.BrowserWindow) : Promise<b
 export async function GitTopLevel() : Promise<string>
 {
     const res:string = await GitCmd("rev-parse --show-toplevel")
+    return res;
+}
+
+export async function GitBranchName() : Promise<string>
+{
+    const res:string = await GitCmd("rev-parse --abbrev-ref HEAD")
+    return res;
+}
+
+export async function GitChangeList() : Promise<string>
+{
+    const res:string = await GitCmd("diff --name-only 2>nul && git diff --cached --name-only 2>nul")
+    return res;
+}
+
+export async function GitStagedList() : Promise<string>
+{
+    const res:string = await GitCmd("diff --cached --name-only 2>nul")
     return res;
 }

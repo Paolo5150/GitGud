@@ -39,14 +39,48 @@ export function Log(message: string): void {
     }
 }
 
+function ClearLogs() {
+    logArea.value = ""
+}
+
+document.getElementById('clearLogsBtn').addEventListener('click', ClearLogs);
 
 window.electronAPI.onUpdateLog((message: string) => {
-    console.log("rendere " + message)
-    logArea.value += message + '\n'
+    if(message !== "")
+        logArea.value += message + '\n'
 })
 
 window.electronAPI.onUpdateTitle((message: string) => {
     const title = document.getElementById('title') as HTMLTextAreaElement
     title.innerHTML = message 
+})
+
+window.electronAPI.onUpdateBranchName((message: string) => {
+    const n = document.getElementById('branchName') as HTMLTextAreaElement
+    n.innerHTML = message 
+})
+
+window.electronAPI.onUpdateChangeList((message: string) => {
+    const n = document.getElementById('changesList') as HTMLTextAreaElement
+
+    var tokens = message.split('\n')
+    n.innerHTML = ""
+    tokens.forEach(element => {
+        const listItem = document.createElement('li');
+        listItem.textContent = element;
+        n.appendChild(listItem)
+    }); 
+})
+
+window.electronAPI.onUpdateUntrackedList((message: string) => {
+    const n = document.getElementById('untrackedList') as HTMLTextAreaElement
+
+    var tokens = message.split('\n')
+    n.innerHTML = ""
+    tokens.forEach(element => {
+        const listItem = document.createElement('li');
+        listItem.textContent = element;
+        n.appendChild(listItem)
+    }); 
 })
 
