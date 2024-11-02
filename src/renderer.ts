@@ -30,25 +30,41 @@ import './index.css';
 import { ipcRenderer } from 'electron';
 
 console.log('👋 This message is being logged by "renderer.js", included via webpack');
+
 const logArea = document.getElementById('logArea') as HTMLTextAreaElement
-export function Log(message: string): void {
-    const logArea = document.getElementById('logArea') as HTMLTextAreaElement; // Cast to HTMLTextAreaElement
-    if (logArea) {
-        logArea.value += message + '\n'; // Append the message and add a new line
-        logArea.scrollTop = logArea.scrollHeight; // Scroll to the bottom
-    }
-}
+const commitBtn = document.getElementById('commitBtn') as HTMLTextAreaElement
+
+commitBtn.style.display = 'none';
+commitBtn.addEventListener('click', () => {  window.electronAPI.clickedCommitBtn()   });
 
 function ClearLogs() {
-    logArea.value = ""
+    logArea.innerHTML = ""
 }
 
 document.getElementById('clearLogsBtn').addEventListener('click', ClearLogs);
 
-window.electronAPI.onUpdateLog((message: string) => {
+window.electronAPI.onUpdateLog((message: string, type: string) => {
     if(message !== "")
-        logArea.value += message + '\n'
-})
+    {
+        const logArea = document.getElementById('logArea') as HTMLTextAreaElement; // Cast to HTMLTextAreaElement
+
+        const logMessage = document.createElement('div');
+        logMessage.textContent = message;
+
+        if (type === 'i') {
+            logMessage.classList.add('log-info');
+        } else if (type === 'w') {
+            logMessage.classList.add('log-warning');
+        } else if (type === 'e') {
+            logMessage.classList.add('log-error');
+        }
+
+        if (logArea) {
+            logArea.appendChild(logMessage);
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+    }
+    })
 
 window.electronAPI.onUpdateTitle((message: string) => {
     const title = document.getElementById('title') as HTMLTextAreaElement
@@ -62,8 +78,52 @@ window.electronAPI.onUpdateBranchName((message: string) => {
 
 window.electronAPI.onUpdateChangeList((message: string) => {
     const n = document.getElementById('changesList') as HTMLTextAreaElement
-
+    
     var tokens = message.split('\n')
+    n.innerHTML = ""
+    tokens.forEach(element => {
+        const listItem = document.createElement('li');
+        listItem.textContent = element;
+
+        listItem.addEventListener('mouseenter', () => { listItem.classList.add('hovered');  });
+        listItem.addEventListener('mouseleave', () => { listItem.classList.remove('hovered'); });
+        listItem.addEventListener('click', () => { window.electronAPI.clickedChangedFile(listItem.innerText) });
+        n.appendChild(listItem)
+    }); 
+})
+
+window.electronAPI.onUpdateUntrackedList((message: string) => {
+    const n = document.getElementById('untrackedList') as HTMLUListElement;
+
+    const tokens = message.split('\n');
+    n.innerHTML = ""; // Clear the existing list
+
+    tokens.forEach(element => {
+        const listItem = document.createElement('li');
+        listItem.textContent = element;
+
+        // Add mouse hover effect
+        listItem.addEventListener('mouseenter', () => {
+            listItem.classList.add('hovered');
+        });
+
+        listItem.addEventListener('mouseleave', () => {
+            listItem.classList.remove('hovered');
+        });
+
+        // Add click event
+        listItem.addEventListener('click', () => {
+          window.electronAPI.clickedUntrackedFile(listItem.innerText)
+        });
+
+        n.appendChild(listItem);
+    });  
+})
+
+window.electronAPI.onUpdateLogList((message: string) => {
+    const n = document.getElementById('commitsList') as HTMLTextAreaElement
+
+    var tokens = message.trim().split('\n\n');
     n.innerHTML = ""
     tokens.forEach(element => {
         const listItem = document.createElement('li');
@@ -72,15 +132,24 @@ window.electronAPI.onUpdateChangeList((message: string) => {
     }); 
 })
 
-window.electronAPI.onUpdateUntrackedList((message: string) => {
-    const n = document.getElementById('untrackedList') as HTMLTextAreaElement
+window.electronAPI.onUpdateStagedList((message: string) => {
+    const n = document.getElementById('stagedList') as HTMLTextAreaElement
 
     var tokens = message.split('\n')
     n.innerHTML = ""
     tokens.forEach(element => {
         const listItem = document.createElement('li');
         listItem.textContent = element;
+
+        listItem.addEventListener('mouseenter', () => { listItem.classList.add('hovered');  });
+        listItem.addEventListener('mouseleave', () => { listItem.classList.remove('hovered'); });
+        listItem.addEventListener('click', () => { window.electronAPI.clickedStagedFile(listItem.innerText) });
         n.appendChild(listItem)
     }); 
+
+    if(message.length > 0)
+        commitBtn.style.display = 'block';
+    else
+        commitBtn.style.display = 'none';
 })
 

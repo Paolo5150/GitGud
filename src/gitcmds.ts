@@ -8,7 +8,7 @@ function GitCmd(command: string)
     return new Promise<string>((resolve, reject) => {
         exec(`git ${command}`, {cwd: currentPath}, (error: Error | null, stdout: string, stderr: string) => {
             if (error) {
-                reject(`Errorrrr: ${stderr.trim()}`);
+                reject(`Error executing "git ${command}": ${stderr.trim()}`);
             } else {
                 resolve(stdout.trim());
             }
@@ -56,12 +56,28 @@ export async function GitBranchName() : Promise<string>
 
 export async function GitChangeList() : Promise<string>
 {
-    const res:string = await GitCmd("diff --name-only 2>nul && git diff --cached --name-only 2>nul")
+    const res:string = await GitCmd("diff --name-only 2>nul")
     return res;
 }
 
 export async function GitStagedList() : Promise<string>
 {
-    const res:string = await GitCmd("diff --cached --name-only 2>nul")
+    return GitCmd("diff --cached --name-only 2>nul")
+}
+
+export async function GitLog() : Promise<string>
+{
+    const res:string = await GitCmd("log")
+    return res;
+}
+
+export async function GitStageFile(fileName:string) : Promise<string>
+{
+    return GitCmd("add " + fileName)
+}
+
+export async function GitUnstageFile(fileName:string) : Promise<string>
+{
+    const res:string = await GitCmd("restore --staged -- " + fileName)
     return res;
 }

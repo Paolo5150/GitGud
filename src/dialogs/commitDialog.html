@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commit Changes</title>
+    <link rel="stylesheet" href="commitDialog.css"> <!-- Add your styles here -->
+</head>
+<body>
+    <div id="customDialog" class="modal">
+        <div class="modal-content">
+            <h2>Commit your changes</h2>
+            <p>This is not a valid git repo!</p>
+            <label for="commitMessage">Enter commit message:</label>
+            <input type="text" id="commitMessage" placeholder="Commit message">
+            <button id="confirmBtn">OK</button>
+            <button id="cancelBtn">Cancel</button>
+        </div>
+    </div>
+    <script src="commitDialog.ts"></script> <!-- Your script for handling dialog interactions -->
+</body>
+</html>

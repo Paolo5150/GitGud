@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Git Good</title>
+    <title>Git Gud</title>
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
@@ -18,13 +18,13 @@
                 </div>
                 
                 <div class="branch-info">
-                    <h3>Local Branches</h3>
-                    <ul id="branchList">               
+                    <h3>Commits</h3>
+                    <ul id="commitsList">               
                     </ul>
                 </div>
             </div>
             
-            <!-- Right Area: Stacked Local Changes and Untracked Files -->
+            <!-- Right Area: Changes Container and Diffs Area -->
             <div class="right-area">
                 <div class="changes-container">
                     <div class="changes-info">
@@ -38,16 +38,35 @@
                             <!-- Untracked files will be populated here -->
                         </ul>
                     </div>
+                    <div class="staged-info">
+                        <h3>Staged Files</h3>
+                        <ul id="stagedList">
+                            <!-- Staged files will be populated here -->
+                        </ul>
+                        <!-- Commit Button -->
+                        <button id="commitBtn">Commit</button>
+                    </div>
+                </div>
+
+                <!-- Diffs Area -->
+                <div class="diffs-area">
+                    <h3>File Diff</h3>
+                    <div class="diff-content" id="diffContent">
+                        <!-- File diff will be populated here -->
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Log Text Area at the bottom -->
-        <textarea class="logs" id="logArea" rows="10" placeholder="Logs will appear here..." readonly></textarea>
+        <ul class="logs" id="logArea">
+            <!-- Log entries will be appended here -->
+        </ul>
         
         <!-- Button to Clear Logs -->
         <button id="clearLogsBtn">Clear Logs</button>
     </div>
+
     <script src="renderer.ts"></script>
 </body>
 </html>

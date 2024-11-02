@@ -10,7 +10,7 @@ html, body {
 }
 
 .container {
-  max-width: 800px;
+  max-width: 1200px;
   height: 100%; /* Set the height to 100% of the viewport */
   margin: 0 auto; /* Center the container horizontally */
   padding: 20px;
@@ -31,8 +31,8 @@ h1 {
   flex-grow: 1; /* Allow this section to grow and fill the available space */
 }
 
-.left-area, .right-area {
-  flex: 1; /* Take equal space */
+.left-area {
+  flex: 1; /* Take up space for the left area */
   margin: 10px; /* Margin between the areas */
   padding: 15px;
   border: 1px solid #ddd;
@@ -40,7 +40,22 @@ h1 {
   background-color: #fafafa;
 }
 
-.repo-info, .branch-info, .changes-info, .untracked-info {
+.right-area {
+  display: flex; /* Flexbox for right area */
+  flex: 2; /* Take more space than the left area */
+  margin: 10px; /* Margin between the areas */
+}
+
+.changes-container {
+  flex: 1; /* Changes container takes up 1 part of the right area */
+  margin-right: 10px; /* Space between changes container and diffs area */
+}
+
+.diffs-area {
+  flex: 1; /* Diffs area takes up 1 part of the right area */
+}
+
+.repo-info, .branch-info, .changes-info, .untracked-info, .staged-info {
   margin-bottom: 20px;
 }
 
@@ -49,29 +64,28 @@ h2, h3 {
   color: #444;
 }
 
-#branchList, #changesList, #untrackedList {
+#commitsList, #changesList, #untrackedList, #stagedList {
   list-style-type: none;
   padding: 0;
+  max-height: 400px; /* Set a maximum height */
+  overflow-y: auto; /* Enable vertical scrolling */
 }
 
-#branchList li, #changesList li, #untrackedList li {
+#commitsList li, #changesList li, #untrackedList li, #stagedList li {
   padding: 8px;
   border-bottom: 1px solid #ddd;
 }
 
-#branchList li:last-child, #changesList li:last-child, #untrackedList li:last-child {
+#commitsList li:last-child, #changesList li:last-child, #untrackedList li:last-child, #stagedList li:last-child {
   border-bottom: none;
 }
 
-.changes-container {
-  display: flex;
-  flex-direction: column; /* Stack Local Changes and Untracked Files vertically */
-  height: 100%; /* Full height of the right area */
-}
-
-.changes-info, .untracked-info {
-  flex: 1; /* Each section takes equal space in the right area */
-  margin-bottom: 10px; /* Space between the two sections */
+.changes-info, .untracked-info, .staged-info {
+  margin-bottom: 10px; /* Space between the sections */
+  background-color: #fafafa; /* Add background color for each section */
+  padding: 10px; /* Add padding for better spacing */
+  border: 1px solid #ddd; /* Optional: add border for separation */
+  border-radius: 5px; /* Optional: round corners */
 }
 
 .logs {
@@ -79,9 +93,57 @@ h2, h3 {
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
+  height: 200px;
+  max-height: 200px; /* Set max height to enable scrolling */
+  overflow-y: auto; /* Enable vertical scrollbar when overflowing */
   resize: none;
   font-family: monospace;
   background-color: #f9f9f9;
   color: #333;
   margin-top: 20px; /* Space between the main content and log area */
+}
+
+#commitBtn {
+  background-color: #4CAF50; /* Green */
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px; /* Space above the button */
+}
+
+#commitBtn:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+.diff-content {
+  white-space: pre; /* Preserve whitespace for diffs */
+  overflow-y: auto; /* Enable scrolling within this section */
+  padding: 10px; /* Padding for better visual */
+  border: 1px solid #ddd; /* Optional border */
+  border-radius: 5px; /* Optional round corners */
+  height: 100%; /* Full height for scrolling */
+}
+
+#untrackedList li, #stagedList li, #changesList li {
+  padding: 8px; /* Add padding for better touch target */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  transition: background-color 0.3s; /* Smooth transition for background color */
+}
+
+#untrackedList li.hovered, #stagedList li.hovered, #changesList li.hovered {
+  background-color: #e0e0e0; /* Change background color on hover */
+}
+
+.log-info {
+  color: black;
+}
+
+.log-warning {
+  color: orange;
+}
+
+.log-error {
+  color: red;
 }
