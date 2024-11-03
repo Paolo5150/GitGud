@@ -9,11 +9,10 @@
 <body>
     <div id="customDialog" class="modal">
         <div class="modal-content">
-            <h2>Commit your changes</h2>
-            <label for="commitMessage">Enter commit message:</label>
-            <input type="text" id="commitMessage" placeholder="Commit message">
-            <span id="warningText" style="color: red; display: none;">Please enter a commit message.</span>
-            <!-- Moved buttons below the warning message -->
+            <h2>Set remote origin</h2>
+            <label for="commitMessage">Set URL:</label>
+            <input type="text" id="urlInput" placeholder="https://github.com/username/repo...">
+            <span id="warningText" style="color: red; display: none;">Cannot be empty</span>
             <div>
                 <button id="confirmBtn">OK</button>
                 <button id="cancelBtn">Cancel</button>
@@ -23,20 +22,14 @@
 
     <script>
         function handleConfirm() {
-            const messageInput = document.getElementById('commitMessage');
+            const urlInput = document.getElementById('urlInput');
             const warningText = document.getElementById('warningText');
 
-            if (messageInput.value.trim() === "") {
-                warningText.style.display = "inline";
-            } else {
-                warningText.style.display = "none";
-
-                window.dialogAPI.clickedConfirmCommit(messageInput.value, (msgBack) => {
-                    if (msgBack === "close") {
+            window.dialogAPI.clickedConfirmOriginURL(urlInput.value, (msgBack) => {
+                if (msgBack === "close") {
                         window.close();
                     }
-                });
-            }
+            });
         }
 
         document.getElementById('confirmBtn').addEventListener('click', () => { handleConfirm(); });

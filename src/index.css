@@ -10,7 +10,7 @@ html, body {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1600px;
   height: 100%; /* Set the height to 100% of the viewport */
   margin: 0 auto; /* Center the container horizontally */
   padding: 20px;
@@ -67,8 +67,31 @@ h2, h3 {
 #commitsList, #changesList, #untrackedList, #stagedList {
   list-style-type: none;
   padding: 0;
-  max-height: 400px; /* Set a maximum height */
+  max-height: 550px; /* Set a maximum height */
   overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.commitListHash {
+  font-weight: bold; /* Makes the commit hash bold */
+  color: #2e8bff; /* Change to a blue color for emphasis */
+}
+
+.commitListAuthor {
+  font-style: italic; /* Italicizes the author */
+  color: #666; /* A muted color for author */
+  margin-left: 10px; /* Adds some spacing from the hash */
+}
+
+.commitListDate {
+  color: #999; /* A lighter color for the date */
+  margin-left: 10px; /* Adds spacing from the author */
+}
+
+.commitListMessage {
+  display: block; /* Makes message appear on a new line */
+  margin-top: 5px; /* Adds some space above the message */
+  color: #333; /* Default text color */
+  padding-left: 20px; /* Indentation for clarity */
 }
 
 #commitsList li, #changesList li, #untrackedList li, #stagedList li {
@@ -124,6 +147,10 @@ h2, h3 {
   border: 1px solid #ddd; /* Optional border */
   border-radius: 5px; /* Optional round corners */
   height: 100%; /* Full height for scrolling */
+  width: 500px;
+  font-size: 0.9em; /* Smaller font for the diff area */
+    max-height: 650px; /* Adjust as needed for the scroll area height */
+    line-height: 1.4; /* Better readability for smaller font */
 }
 
 #untrackedList li, #stagedList li, #changesList li {
@@ -146,4 +173,127 @@ h2, h3 {
 
 .log-error {
   color: red;
+}
+
+.button-group {
+  display: flex; /* Arrange buttons in a row */
+  gap: 10px; /* Space between buttons */
+  margin-top: 10px; /* Space above the buttons */
+}
+
+.button-group button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s; /* Smooth transition for background color */
+}
+
+#addAllBtn, #addAllUntrackedBtn {
+  background-color: #4CAF50; /* Green */
+  color: white;
+}
+
+#discardAllBtn, #deleteAllBtn {
+  background-color: #f44336; /* Red */
+  color: white;
+}
+
+#launchDiffToolBtn {
+  background-color: #2196F3; /* Blue */
+  color: white;
+}
+
+.button-group button:hover {
+  opacity: 0.8; /* Change opacity on hover for feedback */
+}
+
+.change-item {
+  display: flex; /* Align file name and buttons in a row */
+  justify-content: space-between; /* Space between file name and buttons */
+  align-items: center; /* Center vertically */
+  margin: 5px 0; /* Add some vertical spacing */
+}
+
+.file-name {
+  flex-grow: 1; /* Allow the file name to take available space */
+}
+
+.change-buttons {
+  display: flex; /* Arrange buttons in a row */
+  gap: 5px; /* Space between buttons */
+}
+
+.change-buttons button {
+  width: 20px; /* Set a width for the buttons */
+  height: 20px; /* Set a height for the buttons */
+  border: none; /* Remove default border */
+  border-radius: 3px; /* Add slight rounding to corners */
+  cursor: pointer; /* Change cursor to pointer on hover */
+}
+
+.add-btn {
+  background-color: green; /* Green background for add button */
+}
+
+.add-btn:hover {
+  background-color: darkgreen; /* Darker green on hover */
+}
+
+.discard-btn {
+  background-color: red; /* Red background for discard button */
+}
+
+.discard-btn:hover {
+  background-color: darkred; /* Darker red on hover */
+}
+
+.difftool-btn {
+  background-color: blue; /* Blue background for difftool button */
+}
+
+.difftool-btn:hover {
+  background-color: darkblue; /* Darker blue on hover */
+}
+
+/* Optional: Add some transition for smoother hover effect */
+.change-buttons button {
+  transition: background-color 0.3s ease; /* Smooth transition for background color */
+}
+
+.diff-header {
+  color: #00f; /* Blue for the 'diff --git' line */
+  font-weight: bold;
+}
+
+.diff-index {
+  color: #999; /* Grey for the 'index' line */
+  font-style: italic;
+}
+
+.diff-file {
+  color: #070; /* Green for file path lines (--- and +++) */
+  font-weight: bold;
+}
+
+.diff-hunk {
+  color: #b36b00; /* Orange for hunk headers */
+  font-weight: bold;
+}
+
+.diff-addition {
+  color: #228B22; /* Green for additions */
+  background-color: #eaffea;
+  display: block;
+}
+
+.diff-deletion {
+  color: #d9534f; /* Red for deletions */
+  background-color: #ffebeb;
+  display: block;
+}
+
+.diff-context {
+  color: #333; /* Dark grey for unchanged lines */
+  display: block;
 }

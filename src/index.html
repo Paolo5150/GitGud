@@ -31,26 +31,31 @@
                         <h3>Local Changes</h3>
                         <ul id="changesList">
                         </ul>
+                        <!-- Buttons for local changes actions -->
+                        <div class="button-group">
+                            <button id="addAllBtn">Add All</button>
+                            <button id="discardAllBtn">Discard All</button>
+
+                        </div>
                     </div>
                     <div class="untracked-info">
                         <h3>Untracked Files</h3>
                         <ul id="untrackedList">
-                            <!-- Untracked files will be populated here -->
                         </ul>
+                        <div class="button-group">
+                            <button id="addAllUntrackedBtn">Add All</button>
+                            <button id="deleteAllBtn">Delete All</button>
+                        </div>
                     </div>
                     <div class="staged-info">
-                        <h3>Staged Files</h3>
+                        <h3>Staged Files (click to unstage)</h3>
                         <ul id="stagedList">
-                            <!-- Staged files will be populated here -->
                         </ul>
-                        <!-- Commit Button -->
                         <button id="commitBtn">Commit</button>
                     </div>
                 </div>
 
-                <!-- Diffs Area -->
                 <div class="diffs-area">
-                    <h3>File Diff</h3>
                     <div class="diff-content" id="diffContent">
                         <!-- File diff will be populated here -->
                     </div>
@@ -58,15 +63,12 @@
             </div>
         </div>
 
-        <!-- Log Text Area at the bottom -->
         <ul class="logs" id="logArea">
-            <!-- Log entries will be appended here -->
         </ul>
         
-        <!-- Button to Clear Logs -->
         <button id="clearLogsBtn">Clear Logs</button>
     </div>
 
-    <script src="renderer.ts"></script>
+    <script src="renderer.js"></script>
 </body>
 </html>
