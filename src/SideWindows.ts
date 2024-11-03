@@ -53,7 +53,6 @@ export function OpenBranchesDialog(preloadScript: string )
       });
       dialogWindow.loadFile(path.join(__dirname, 'dialogs','branches.html'));
       dialogWindow.setMenu(null);
-
       // Optionally, handle the window closed event
       dialogWindow.on('closed', () => {
         });

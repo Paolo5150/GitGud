@@ -77,6 +77,16 @@ export async function GitChangeList() : Promise<string>
     return res;
 }
 
+export async function GitCheckoutBranch(branchName: string) : Promise<string>
+{
+    return await GitCmd("checkout " + branchName)
+}
+
+export async function GitCheckoutTrackBranch(branchName: string) : Promise<string>
+{
+    return await GitCmd("checkout --track " + branchName)
+}
+
 export async function GitStagedList() : Promise<string>
 {
     return GitCmd("diff --cached --name-only 2>nul")
@@ -84,7 +94,7 @@ export async function GitStagedList() : Promise<string>
 
 export async function GitDiffFile(fileName: string) : Promise<string>
 {
-    return GitCmd("diff -- " + fileName)
+    return GitCmd("diff -- \"" + fileName + "\"")
 }
 
 export async function GitLog() : Promise<string>
@@ -95,12 +105,12 @@ export async function GitLog() : Promise<string>
 
 export async function GitStageFile(fileName:string) : Promise<string>
 {
-    return GitCmd("add " + fileName)
+    return GitCmd("add \"" + fileName + "\"")
 }
 
 export async function GitUnstageFile(fileName:string) : Promise<string>
 {
-    const res:string = await GitCmd("restore --staged -- " + fileName)
+    const res:string = await GitCmd("restore --staged -- \"" + fileName + "\"")
     return res;
 }
 
@@ -131,16 +141,16 @@ export async function GitDiscardAllChanges() : Promise<string>
 
 export async function GitDiscardFileChanges(fileName: string) : Promise<string>
 {
-    return GitCmd("checkout -- " + fileName)
+    return GitCmd("checkout -- \"" + fileName + "\"")
 }
 
 export async function GitDeleteUntrackedFile(fileName: string) : Promise<string>
 {
-    return GitCmd("clean -f " + fileName)
+    return GitCmd("clean -f \"" + fileName + "\"")
 }
 export async function GitLaunchDifftoolOnOfile(fileName: string) : Promise<string>
 {
-    return GitCmd("difftool -- " + fileName)
+    return GitCmd("difftool -- \"" + fileName + "\"")
 }
 
 export async function GitSetOrigin(url: string) : Promise<string>
@@ -151,7 +161,7 @@ export async function GitSetOrigin(url: string) : Promise<string>
 export async function ReadFile(fileName: string) : Promise<string>
 {
     return new Promise<string>((resolve, reject) => {
-        exec(`cat ${fileName}`, {cwd: currentPath}, (error: Error | null, stdout: string, stderr: string) => {
+        exec(`cat \"${fileName}\"`, {cwd: currentPath}, (error: Error | null, stdout: string, stderr: string) => {
             if (error) {
                 reject(``);
             } else {

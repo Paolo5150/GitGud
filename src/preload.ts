@@ -39,6 +39,9 @@ interface DialogAPI {
     clickedConfirmOriginURL: (url: string, callback: (response: string) => void) => void;
     clickedConfirmCommit: (commitMessage: string, callback: (response: string) => void) => void;
     onCommitComplete: (callback: (success: boolean) => void) => void;
+    getBranchList: (remote: boolean) => Promise<string>;
+    checkoutBranch: (branchName: string, dialogWindow: Electron.BrowserWindow) => Promise<boolean>;
+    checkoutAndTrackBranch: (branchName: string, dialogWindow: Electron.BrowserWindow) => Promise<boolean>;
 }
 
 // Extend Window interface
@@ -124,6 +127,19 @@ const dialogAPI: DialogAPI = {
     clickedConfirmCommit: (commitMessage: string, callback: (response: string) => void) => {
         ipcRenderer.send('clicked-confirm-commit', commitMessage);
         ipcRenderer.once('confirm-commit-response', (_event, response) => { callback(response); });
+    },
+
+    getBranchList: async (remote: boolean) => {
+        const branchList = await ipcRenderer.invoke('get-branch-list', remote); 
+        return branchList; 
+    },
+    checkoutBranch: async (branchName: string, dialogWindow: Electron.BrowserWindow) => {
+        const result =  await ipcRenderer.invoke('checkout-branch', branchName); 
+        return result;
+    },
+    checkoutAndTrackBranch: async (branchName: string, dialogWindow: Electron.BrowserWindow) => {
+        const result =  await ipcRenderer.invoke('checkout-track-branch', branchName); 
+        return result;
     },
     
     onCommitComplete: (callback) => 

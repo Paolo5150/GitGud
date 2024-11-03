@@ -6,7 +6,7 @@ body {
 }
 
 .container {
-    max-width: 600px;
+    max-width: 800px; 
     margin: auto;
     padding: 20px;
     background: #fff;
@@ -19,8 +19,19 @@ h1 {
     color: #333;
 }
 
+.branches-container {
+    display: flex; /* Aligns the two sections side by side */
+    gap: 20px; /* Adds some space between the two sections */
+}
+
 .branches-section {
-    margin-bottom: 20px;
+    flex: 1; /* Allows the sections to take equal space */
+    max-height: 500px; /* Set a max height for scrollable area */
+    overflow-y: auto; /* Enables vertical scrolling */
+    border: 1px solid #ccc; /* Optional: adds a border around sections */
+    padding: 10px; /* Adds some padding inside the sections */
+    border-radius: 5px; /* Rounds the corners of the sections */
+    background-color: #f9f9f9; /* Optional: gives a background color */
 }
 
 h2 {
@@ -37,4 +48,18 @@ h2 {
     margin: 5px 0;
     padding: 10px;
     border-radius: 4px;
+}
+
+.branch-item {
+    cursor: pointer; /* Change cursor to pointer */
+    padding: 10px; /* Add padding */
+    border: 1px solid #ccc; /* Add border */
+    margin: 5px 0; /* Add margin between items */
+    border-radius: 5px; /* Round the corners */
+    background-color: #f9f9f9; /* Background color */
+    transition: background-color 0.3s; /* Smooth background transition */
+}
+
+.branch-item:hover {
+    background-color: #e0e0e0; /* Lighten on hover */
 }

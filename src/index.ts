@@ -1,5 +1,5 @@
 import { app, BrowserWindow, Menu, ipcMain, dialog } from 'electron';
-import { ChangeDir, GitAddAllChanges, GitAddAllUntrackedFiles, GitBranchList, GitBranchName, GitChangeList,  GitCommitStaged, GitDeleteAllUntrackedFiles, GitDeleteUntrackedFile, GitDiffFile, GitDiscardAllChanges, GitDiscardFileChanges, GitIsRepoValid, GitLaunchDifftoolOnOfile, GitLog, GitPull, GitPushBranch, GitSetOrigin, GitStagedList, GitStageFile, GitStatus, GitTopLevel, GitUnstageFile, GitUntrackedFiles, ReadFile } from './gitcmds';
+import { ChangeDir, GitAddAllChanges, GitAddAllUntrackedFiles, GitBranchList, GitBranchName, GitChangeList,  GitCheckoutBranch,  GitCheckoutTrackBranch,  GitCommitStaged, GitDeleteAllUntrackedFiles, GitDeleteUntrackedFile, GitDiffFile, GitDiscardAllChanges, GitDiscardFileChanges, GitIsRepoValid, GitLaunchDifftoolOnOfile, GitLog, GitPull, GitPushBranch, GitSetOrigin, GitStagedList, GitStageFile, GitStatus, GitTopLevel, GitUnstageFile, GitUntrackedFiles, ReadFile } from './gitcmds';
 import { FSWatcher } from 'chokidar';
 import path from 'path'
 import { OpenBranchesDialog, OpenCommitDialog, OpenSetOriginDialog } from './SideWindows';
@@ -42,7 +42,11 @@ const CreateMenu = ()=>{
                 label: 'Branches',
                 click: ()=>{OpenBranchesDialog(MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY)}
         
-              },    
+              },
+              
+              {
+                label: 'Create New'
+              },
               {
                 label: 'Push to remote',
                 click: async ()=>{
@@ -104,6 +108,7 @@ const createWindow = (): void => {
   // Open the DevTools.
   //mainWindow.webContents.openDevTools();
   mainWindow.setMenu(null);
+
   CreateMenu();
 };
 
@@ -302,6 +307,8 @@ ipcMain.on('clicked-staged-file', (event, fileName: string)=>
     }
   })
 
+
+
 ipcMain.on('clicked-changed-file', async (event, fileName: string)=>
   {
     try{
@@ -424,10 +431,75 @@ async function openFolderPicker() {
     }
 
     Refresh();
-  
 
     // You can perform further actions with the selected folder here
   } else {
     console.log('Folder selection was canceled');
   }
 }
+//Handles, invoked by code in dialog html
+
+ipcMain.handle('get-branch-list', (event, remote: boolean)=>
+  { 
+    try{
+      return GitBranchList(remote)
+    }catch(error) {
+      mainWindow.webContents.send('log',"Error while fetching branch list " + error, 'e')
+      
+    }
+  })
+
+ipcMain.handle('checkout-branch', async (event, branchName: string, dialogWindow: Electron.BrowserWindow)=>
+  { 
+    try{
+      await dialog.showMessageBox(dialogWindow, {
+        type: 'info', // Type of dialog (info, error, question, etc.)
+        title: 'Alert',
+        message: 'Are you sure you want to switch branch?',
+        buttons: ['OK', 'Cancel'], // Button(s) to display
+      }).then(async result => {
+        if(result.response == 0)
+        {
+          await GitCheckoutBranch(branchName)
+          return true;
+        }
+      }).catch(err => {
+      });
+
+      
+    }catch(error) {
+      mainWindow.webContents.send('log',"Error while checking out branch " + error, 'e')
+      return false;
+    }
+})
+
+ipcMain.handle('checkout-track-branch', async (event, branchName: string, dialogWindow: Electron.BrowserWindow)=>
+  { 
+    try{
+      await dialog.showMessageBox(dialogWindow, {
+        type: 'info', // Type of dialog (info, error, question, etc.)
+        title: 'Alert',
+        message: 'Are you sure you want to track this branch?',
+        buttons: ['OK', 'Cancel'],
+      }).then(async result => {
+        if(result.response == 0)
+        {
+          try
+          {
+            await GitCheckoutTrackBranch(branchName)
+            return true;
+          }
+          catch(error)
+          {
+              mainWindow.webContents.send('log',"Error while checking out branch " + error, 'e')
+              return false;
+          }
+        }
+      }).catch(err => {
+      });
+      
+    }catch(error) {
+      mainWindow.webContents.send('log',"Error while checking out branch " + error, 'e')
+      return false;
+    }
+})
