@@ -1,5 +1,5 @@
 import { app, BrowserWindow, Menu, ipcMain, dialog } from 'electron';
-import { ChangeDir, GitAddAllChanges, GitAddAllUntrackedFiles, GitBranchList, GitBranchName, GitChangeList,  GitCheckoutBranch,  GitCheckoutTrackBranch,  GitCommitStaged, GitDeleteAllUntrackedFiles, GitDeleteUntrackedFile, GitDiffFile, GitDiscardAllChanges, GitDiscardFileChanges, GitIsRepoValid, GitLaunchDifftoolOnOfile, GitLog, GitPull, GitPushBranch, GitSetOrigin, GitStagedList, GitStageFile, GitStatus, GitTopLevel, GitUnstageFile, GitUntrackedFiles, ReadFile } from './gitcmds';
+import { ChangeDir, GitAddAllChanges, GitAddAllUntrackedFiles, GitBranchList, GitBranchName, GitChangeList,  GitCheckoutBranch,  GitCheckoutTrackBranch,  GitCommitStaged, GitDeleteAllUntrackedFiles, GitDeleteLocalBranch, GitDeleteUntrackedFile, GitDiffFile, GitDiscardAllChanges, GitDiscardFileChanges, GitIsRepoValid, GitLaunchDifftoolOnOfile, GitLog, GitPull, GitPushBranch, GitSetOrigin, GitStagedList, GitStageFile, GitStatus, GitTopLevel, GitUnstageFile, GitUntrackedFiles, ReadFile } from './gitcmds';
 import { FSWatcher } from 'chokidar';
 import path from 'path'
 import { OpenBranchesDialog, OpenCommitDialog, OpenSetOriginDialog } from './SideWindows';
@@ -29,7 +29,11 @@ const CreateMenu = ()=>{
     submenu: [
       {
         label: 'Open Repo',
-        click: (menuItem, browserWin) => openFolderPicker()
+        click: (menuItem, browserWin) => {
+
+          openFolderPicker();
+
+        }
       }]
     },
      // Conditionally add the Git menu
@@ -416,7 +420,7 @@ async function openFolderPicker() {
       var tokens = title.split('/')
       var name = tokens.at(tokens.length -1)
       mainWindow.webContents.send('update-title',name)
-    
+      
     }
     catch(error)
     {
@@ -431,6 +435,7 @@ async function openFolderPicker() {
     }
 
     Refresh();
+    mainWindow.webContents.send('update-diff-area'," ") //Clear diff area
 
     // You can perform further actions with the selected folder here
   } else {
@@ -502,4 +507,20 @@ ipcMain.handle('checkout-track-branch', async (event, branchName: string, dialog
       mainWindow.webContents.send('log',"Error while checking out branch " + error, 'e')
       return false;
     }
+})
+
+ipcMain.handle('delete-local-branch', async (event, branchName: string, dialogWindow: Electron.BrowserWindow)=>
+  { 
+    try
+    {
+      await GitDeleteLocalBranch(branchName)
+      return true;
+    }
+    catch(error)
+    {
+        mainWindow.webContents.send('log',"Error while deleting branch " + error, 'e')
+        return false;
+    }
+      
+  
 })

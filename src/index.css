@@ -64,10 +64,17 @@ h2, h3 {
   color: #444;
 }
 
-#commitsList, #changesList, #untrackedList, #stagedList {
+#commitsList {
   list-style-type: none;
   padding: 0;
-  max-height: 550px; /* Set a maximum height */
+  max-height: 720px; 
+  overflow-y: auto; 
+}
+
+#changesList, #untrackedList, #stagedList {
+  list-style-type: none;
+  padding: 0;
+  max-height: 250px; /* Set a maximum height */
   overflow-y: auto; /* Enable vertical scrolling */
 }
 
@@ -116,7 +123,7 @@ h2, h3 {
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  height: 200px;
+  min-height: 60px; /* Ensure at least 3 lines height (assuming line height) */
   max-height: 200px; /* Set max height to enable scrolling */
   overflow-y: auto; /* Enable vertical scrollbar when overflowing */
   resize: none;

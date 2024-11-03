@@ -82,6 +82,11 @@ export async function GitCheckoutBranch(branchName: string) : Promise<string>
     return await GitCmd("checkout " + branchName)
 }
 
+export async function GitDeleteLocalBranch(branchName: string) : Promise<string>
+{
+    return await GitCmd("branch -D " + branchName)
+}
+
 export async function GitCheckoutTrackBranch(branchName: string) : Promise<string>
 {
     return await GitCmd("checkout --track " + branchName)

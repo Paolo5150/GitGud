@@ -124,6 +124,7 @@ window.electronAPI.onUpdateChangeList((message: string) => {
             const addBtn = document.createElement('button');
             addBtn.classList.add('add-btn');
             addBtn.title = 'Stage file for commit';
+            //addBtn.innerHTML = '➕'
             addBtn.addEventListener('click', (event) => {
                 window.electronAPI.clickedAddFile(element)
                 event.stopPropagation(); // Prevent list item click event
@@ -134,6 +135,8 @@ window.electronAPI.onUpdateChangeList((message: string) => {
             const discardBtn = document.createElement('button');
             discardBtn.classList.add('discard-btn');
             discardBtn.title = 'Discard changes';
+            //discardBtn.innerHTML = '❌'
+
             discardBtn.addEventListener('click', () => {
                 window.electronAPI.clickedDiscardFileChanges(element)
 
@@ -143,7 +146,7 @@ window.electronAPI.onUpdateChangeList((message: string) => {
             const difftoolBtn = document.createElement('button');
             difftoolBtn.classList.add('difftool-btn');
             difftoolBtn.title = 'Launch difftool';
-
+            //difftoolBtn.innerHTML = '🔼🔽'
             difftoolBtn.addEventListener('click', () => {
                 window.electronAPI.clickedDiffToolOnFile(element)
             });
@@ -217,6 +220,7 @@ window.electronAPI.onUpdateUntrackedList((message: string) => {
         const addBtn = document.createElement('button');
         addBtn.classList.add('add-btn');
         addBtn.title = 'Add this file';
+        //addBtn.innerHTML = '➕'
         addBtn.addEventListener('click', (event) => {
             window.electronAPI.clickedAddFile(element)
             event.stopPropagation(); // Prevent list item click event
@@ -226,6 +230,7 @@ window.electronAPI.onUpdateUntrackedList((message: string) => {
         const deleteBtn = document.createElement('button');
         deleteBtn.classList.add('discard-btn'); // Reuse 'discard-btn' class for styling
         deleteBtn.title = 'Delete this file';
+        //deleteBtn.innerHTML = '🗑️'
         deleteBtn.addEventListener('click', (event) => {
             window.electronAPI.clickedDeleteUntrackedFile(element)
             event.stopPropagation(); // Prevent list item click event
