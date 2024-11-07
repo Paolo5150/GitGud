@@ -131,7 +131,9 @@ ipcMain.on('clicked-add-all-btn', async (event, commitMessage: string) =>
 {     
     try
     {
+      mainWindow.webContents.send('log',"Adding all changed files", 'i')
       await GitAddAllChanges();
+      mainWindow.webContents.send('log',"-- Changed files added", 'i')
       Refresh();
     }catch(err)
     {
@@ -145,8 +147,9 @@ ipcMain.on('clicked-add-all-untracked-btn', async (event) =>
   {     
     try
     {
+      mainWindow.webContents.send('log',"Adding all untracked files", 'i')
       await GitAddAllUntrackedFiles();
-      console.log('add all')
+      mainWindow.webContents.send('log',"-- Untracked files added", 'i')
       Refresh();
     }
     catch(error)
@@ -169,7 +172,10 @@ ipcMain.on('clicked-delete-all-btn', async (event) =>
       {
         try
         {
+          mainWindow.webContents.send('log',"Deleting all untracked files", 'i')
           await GitDeleteAllUntrackedFiles();
+          mainWindow.webContents.send('log',"-- Untracked files nuked", 'i')
+
           Refresh();
         }
         catch(error)
@@ -201,8 +207,11 @@ ipcMain.on('clicked-difftool-file', async (event, fileName: string) =>
         {
           try
           {
+            mainWindow.webContents.send('log',"Deleting file " + fileName, 'i')
             await GitDeleteUntrackedFile(fileName);
             mainWindow.webContents.send('update-diff-area'," ") //Clear diff area
+            mainWindow.webContents.send('log',"-- File nuked", 'i')
+
             Refresh();
           }
           catch(error)
@@ -260,7 +269,10 @@ ipcMain.on('clicked-discard-all-btn', async (event, commitMessage: string) =>
 ipcMain.on('clicked-add-file', async (event, filename: string) =>
   {     
     try{
+      mainWindow.webContents.send('log',"Adding file to stage: " + filename, 'i')
       await GitStageFile(filename); 
+      mainWindow.webContents.send('log',"-- File added", 'i')
+
       Refresh();
     }catch(error) {
       mainWindow.webContents.send('log',"Error while staging " + filename, 'e')
@@ -270,10 +282,11 @@ ipcMain.on('clicked-add-file', async (event, filename: string) =>
 
 ipcMain.on('clicked-confirm-commit', async (event, commitMessage: string) =>
   {     
-    console.log('commit message ' + commitMessage)
     event.reply('confirm-commit-response', 'close') //Tell the window to close
     try{
+      mainWindow.webContents.send('log',"Commiting with message '" + commitMessage + "'", 'i')
       await GitCommitStaged(commitMessage); 
+      mainWindow.webContents.send('log',"-- Commit ok", 'i')
       Refresh();
     }catch(error) {
       mainWindow.webContents.send('log',"Error while commiting ", 'e')
@@ -282,10 +295,12 @@ ipcMain.on('clicked-confirm-commit', async (event, commitMessage: string) =>
 
 ipcMain.on('clicked-confirm-branch-name', async (event, branchName: string) =>
     {     
-      console.log('commit message ' + branchName)
+
       event.reply('confirm-branch-name-response', 'close') //Tell the window to close
       try{
+        mainWindow.webContents.send('log',"Creating branch " + branchName, 'i')
         await GitCreateBranch(branchName); 
+        mainWindow.webContents.send('log',"-- Branch created ", 'i')
         Refresh();
     }catch(error) {
         mainWindow.webContents.send('log',"Error while creating new branch: " + error, 'e')
@@ -309,8 +324,10 @@ ipcMain.on('clicked-confirm-origin-url', async (event, url: string) =>
 ipcMain.on('clicked-untracked-file', async (event, fileName: string)=>
   { 
     try{
+      mainWindow.webContents.send('log',"Reading file " + fileName,'i')
       var content = await ReadFile(fileName); 
       mainWindow.webContents.send('update-diff-area',content) //Clear diff area
+      mainWindow.webContents.send('log',"-- Reading file ok" ,'i')
 
       Refresh();
     }catch(error) {
@@ -321,7 +338,10 @@ ipcMain.on('clicked-untracked-file', async (event, fileName: string)=>
 ipcMain.on('clicked-staged-file', (event, fileName: string)=>
   { 
     try{
+      mainWindow.webContents.send('log',"Staging file " + fileName,'i')
       GitUnstageFile(fileName); 
+      mainWindow.webContents.send('log',"-- Staging file ok" ,'i')
+
       Refresh();
     }catch(error) {
       mainWindow.webContents.send('log',"Error while unstaging file " + error, 'e')
@@ -465,6 +485,7 @@ async function openFolderPicker() {
 ipcMain.handle('get-branch-list', (event, remote: boolean)=>
   { 
     try{
+      
       return GitBranchList(remote)
     }catch(error) {
       mainWindow.webContents.send('log',"Error while fetching branch list " + error, 'e')
@@ -483,12 +504,13 @@ ipcMain.handle('checkout-branch', async (event, branchName: string, dialogWindow
       }).then(async result => {
         if(result.response == 0)
         {
+          mainWindow.webContents.send('log',"Checking out branch " + branchName,'i')
           await GitCheckoutBranch(branchName)
+          mainWindow.webContents.send('log',"-- Checking out ok " + branchName,'i')
           return true;
         }
       }).catch(err => {
       });
-
       
     }catch(error) {
       mainWindow.webContents.send('log',"Error while checking out branch " + error, 'e')
@@ -502,21 +524,16 @@ ipcMain.handle('checkout-track-branch', async (event, branchName: string, dialog
       await dialog.showMessageBox(dialogWindow, {
         type: 'info', // Type of dialog (info, error, question, etc.)
         title: 'Alert',
-        message: 'Are you sure you want to track this branch?',
-        buttons: ['OK', 'Cancel'],
+        message: 'Are you sure you want to track branch?',
+        buttons: ['OK', 'Cancel'], // Button(s) to display
       }).then(async result => {
         if(result.response == 0)
         {
-          try
-          {
-            await GitCheckoutTrackBranch(branchName)
-            return true;
-          }
-          catch(error)
-          {
-              mainWindow.webContents.send('log',"Error while checking out branch " + error, 'e')
-              return false;
-          }
+          mainWindow.webContents.send('log',"Checking out and tracking branch " + branchName,'i')
+          await GitCheckoutTrackBranch(branchName)
+          mainWindow.webContents.send('log',"-- Checking out ok " ,'i')
+
+          return true;
         }
       }).catch(err => {
       });
@@ -531,7 +548,9 @@ ipcMain.handle('delete-local-branch', async (event, branchName: string, dialogWi
   { 
     try
     {
+      mainWindow.webContents.send('log',"Deleting branch " + branchName,'i')
       await GitDeleteLocalBranch(branchName)
+      mainWindow.webContents.send('log',"-- Branch deleted",'i')
       return true;
     }
     catch(error)
@@ -545,9 +564,9 @@ ipcMain.handle('merge-branch', async (event, branchName: string, dialogWindow: E
   { 
     try
     {
+      mainWindow.webContents.send('log',"Merging branch " + branchName,'i')
       await GitMergeBranch(branchName)
-      mainWindow.webContents.send('log',"Merge done" , 'i')
-
+      mainWindow.webContents.send('log',"-- Merge done" , 'i')
       return true;
     }
     catch(error)

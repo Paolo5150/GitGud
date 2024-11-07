@@ -42,6 +42,7 @@ interface DialogAPI {
     onCommitComplete: (callback: (success: boolean) => void) => void;
     getBranchList: (remote: boolean) => Promise<string>;
     checkoutBranch: (branchName: string, dialogWindow: Electron.BrowserWindow) => Promise<boolean>;
+    trackBranch: (branchName: string, dialogWindow: Electron.BrowserWindow) => Promise<boolean>;
     deleteLocalBranch: (branchName: string, dialogWindow: Electron.BrowserWindow) => Promise<boolean>;
     mergeBranch: (branchName: string, dialogWindow: Electron.BrowserWindow) => Promise<boolean>;
     checkoutAndTrackBranch: (branchName: string, dialogWindow: Electron.BrowserWindow) => Promise<boolean>;
@@ -141,6 +142,10 @@ const dialogAPI: DialogAPI = {
     },
     checkoutBranch: async (branchName: string, dialogWindow: Electron.BrowserWindow) => {
         const result =  await ipcRenderer.invoke('checkout-branch', branchName); 
+        return result;
+    },
+    trackBranch: async (branchName: string, dialogWindow: Electron.BrowserWindow) => {
+        const result =  await ipcRenderer.invoke('checkout-track-branch', branchName); 
         return result;
     },
     deleteLocalBranch: async (branchName: string, dialogWindow: Electron.BrowserWindow) => {
