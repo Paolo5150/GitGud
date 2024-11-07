@@ -61,7 +61,7 @@ const CreateMenu = ()=>{
                     mainWindow.webContents.send('log',"Pushing to remote...", 'i')
                     var res = await GitBranchName()
                     await GitPushBranch(res)
-                    mainWindow.webContents.send('log',"Branch pushed successfully", 'i')
+                    mainWindow.webContents.send('log',"-- Branch pushed successfully", 'i')
                   }
                   catch(err)  { mainWindow.webContents.send('log',"Error while pushing" + err, 'e') }
                   
@@ -74,7 +74,7 @@ const CreateMenu = ()=>{
                   {
                     mainWindow.webContents.send('log',"Pulling from remote...", 'i')
                     await GitPull()
-                    mainWindow.webContents.send('log',"Branch pulled successfully", 'i')
+                    mainWindow.webContents.send('log',"-- Branch pulled successfully", 'i')
                   }
                   catch(err)  { mainWindow.webContents.send('log',"Error while pulling" + err, 'e') }
                 }

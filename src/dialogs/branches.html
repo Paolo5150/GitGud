@@ -143,7 +143,6 @@
         }
 
         async function mergeBranch(branchName) {
-            // Implement merge logic
             if (confirm(`Are you sure you want to merge ${branchName} into ${currentBranchName}?`))
             {
                 await window.dialogAPI.mergeBranch(branchName, window);
