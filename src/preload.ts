@@ -38,10 +38,12 @@ interface MainWindowAPI {
 interface DialogAPI {
     clickedConfirmOriginURL: (url: string, callback: (response: string) => void) => void;
     clickedConfirmCommit: (commitMessage: string, callback: (response: string) => void) => void;
+    clickedConfirmBranchName: (branchName: string, callback: (response: string) => void) => void;
     onCommitComplete: (callback: (success: boolean) => void) => void;
     getBranchList: (remote: boolean) => Promise<string>;
     checkoutBranch: (branchName: string, dialogWindow: Electron.BrowserWindow) => Promise<boolean>;
     deleteLocalBranch: (branchName: string, dialogWindow: Electron.BrowserWindow) => Promise<boolean>;
+    mergeBranch: (branchName: string, dialogWindow: Electron.BrowserWindow) => Promise<boolean>;
     checkoutAndTrackBranch: (branchName: string, dialogWindow: Electron.BrowserWindow) => Promise<boolean>;
 }
 
@@ -129,7 +131,10 @@ const dialogAPI: DialogAPI = {
         ipcRenderer.send('clicked-confirm-commit', commitMessage);
         ipcRenderer.once('confirm-commit-response', (_event, response) => { callback(response); });
     },
-
+    clickedConfirmBranchName: (commitMessage: string, callback: (response: string) => void) => {
+        ipcRenderer.send('clicked-confirm-branch-name', commitMessage);
+        ipcRenderer.once('confirm-branch-name-response', (_event, response) => { callback(response); });
+    },
     getBranchList: async (remote: boolean) => {
         const branchList = await ipcRenderer.invoke('get-branch-list', remote); 
         return branchList; 
@@ -140,6 +145,10 @@ const dialogAPI: DialogAPI = {
     },
     deleteLocalBranch: async (branchName: string, dialogWindow: Electron.BrowserWindow) => {
         const result =  await ipcRenderer.invoke('delete-local-branch', branchName); 
+        return result;
+    },
+    mergeBranch: async (branchName: string, dialogWindow: Electron.BrowserWindow) => {
+        const result =  await ipcRenderer.invoke('merge-branch', branchName); 
         return result;
     },
     checkoutAndTrackBranch: async (branchName: string, dialogWindow: Electron.BrowserWindow) => {

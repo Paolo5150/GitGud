@@ -1,5 +1,6 @@
 import {exec} from 'child_process'
 import { ipcMain } from 'electron';
+import { shell } from 'electron'
 
 var currentPath:string;
 
@@ -87,6 +88,11 @@ export async function GitDeleteLocalBranch(branchName: string) : Promise<string>
     return await GitCmd("branch -D " + branchName)
 }
 
+export async function GitMergeBranch(branchName: string) : Promise<string>
+{
+    return await GitCmd("merge " + branchName)
+}
+
 export async function GitCheckoutTrackBranch(branchName: string) : Promise<string>
 {
     return await GitCmd("checkout --track " + branchName)
@@ -144,6 +150,11 @@ export async function GitDiscardAllChanges() : Promise<string>
     return GitCmd("checkout .")
 }
 
+export async function GitCreateBranch(branchName: string) : Promise<string>
+{
+    return GitCmd("checkout -b \"" + branchName + "\"")
+}
+
 export async function GitDiscardFileChanges(fileName: string) : Promise<string>
 {
     return GitCmd("checkout -- \"" + fileName + "\"")
@@ -161,6 +172,20 @@ export async function GitLaunchDifftoolOnOfile(fileName: string) : Promise<strin
 export async function GitSetOrigin(url: string) : Promise<string>
 {
     return GitCmd("remote add origin " + url)
+}
+
+export async function OpenRepoInExplorer() 
+{
+    if(currentPath !== '')
+    {
+        shell.openPath(currentPath)
+        .then((response) => {
+            if (response) {
+                console.error(`Failed to open path: ${response}`);
+            }
+        })
+        .catch((error) => console.error(`Error opening path: ${error}`));
+    }
 }
 
 export async function ReadFile(fileName: string) : Promise<string>

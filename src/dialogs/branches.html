@@ -49,6 +49,7 @@
         async function fetchBranches(remote = false) {
             try {
                 const branches = await window.dialogAPI.getBranchList(remote);
+                if(branches === '') return
                 var appropriateList = remote ? 'remoteBranches' : 'localBranches';
                 const localBranchesList = document.getElementById(appropriateList);
                 localBranchesList.innerHTML = ''; 
@@ -75,8 +76,7 @@
                     checkoutButton.innerHTML = '🗂'; // Icon for checkout
                     checkoutButton.onclick = () => switchBranch(branch);
                     
-                    // Merge button
-                  
+                    // Merge button                  
                     const mergeButton = document.createElement('button');
                     mergeButton.classList.add('branch-button');
                     mergeButton.title = 'Merge Branch';
@@ -119,8 +119,8 @@
             // Implement merge logic
             if (confirm(`Are you sure you want to merge ${branchName} into ${currentBranchName}?`))
             {
-                 //await window.dialogAPI.mergeBranch(branchName, window);
-                fetchBranches(false);
+                await window.dialogAPI.mergeBranch(branchName, window);
+
             }
            
         }

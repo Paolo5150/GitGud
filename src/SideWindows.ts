@@ -21,6 +21,26 @@ export function OpenCommitDialog(preloadScript: string )
         });
 }
 
+export function OpenBranchNameDialog(preloadScript: string )
+{
+    var dialogWindow = new BrowserWindow({
+        width: 400,
+        height: 300,
+        title: "New Branch",
+        webPreferences: {
+            contextIsolation: true,
+            preload: preloadScript
+        }
+      });
+
+      dialogWindow.loadFile(path.join(__dirname, 'dialogs','createBranchDialog.html'));
+      dialogWindow.setMenu(null);
+
+      // Optionally, handle the window closed event
+      dialogWindow.on('closed', () => {
+        });
+}
+
 export function OpenSetOriginDialog(preloadScript: string )
 {
     var dialogWindow = new BrowserWindow({
