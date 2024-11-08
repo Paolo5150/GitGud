@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Branch</title>
+    <link rel="stylesheet" href="commitDialog.css">
+</head>
+<body>
+    <div id="customDialog" class="modal">
+        <div class="modal-content">
+            <h2>Branch Name</h2>
+            <label for="commitMessage">Enter branch name:</label>
+            <input type="text" id="commitMessage" placeholder="FixAnimation...">
+            <span id="warningText" style="color: red; display: none;">Please enter a name for the branch</span>
+            <!-- Moved buttons below the warning message -->
+            <div>
+                <button id="confirmBtn">OK</button>
+                <button id="cancelBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function handleConfirm() {
+            const messageInput = document.getElementById('commitMessage');
+            const warningText = document.getElementById('warningText');
+
+            if (messageInput.value.trim() === "") {
+                warningText.style.display = "inline";
+            } else {
+                warningText.style.display = "none";
+
+                window.dialogAPI.clickedConfirmBranchName(messageInput.value, (msgBack) => {
+                    if (msgBack === "close") {
+                        window.close();
+                    }
+                });
+           
+            }
+        }
+
+        document.getElementById('confirmBtn').addEventListener('click', () => { handleConfirm(); });
+        document.getElementById('cancelBtn').addEventListener('click', () => {window.close(); });
+        
+    </script>
+</body>
+</html>
