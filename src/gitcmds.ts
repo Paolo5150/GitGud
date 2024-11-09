@@ -3,6 +3,7 @@ import { ipcMain } from 'electron';
 import { shell } from 'electron'
 
 var currentPath:string;
+var baseBranch: string; //Used for checking out new branches: if empty, git checkout will branch off current branch, otherwise will branch off whatever name this var is set to
 
 function GitCmd(command: string)
 {
@@ -17,6 +18,16 @@ function GitCmd(command: string)
     });
 }
 
+
+export function ResetBaseBranch()
+{
+    baseBranch = ""
+}
+
+export function SetBaseBranch(name: string)
+{
+    baseBranch = name
+}
 
 export function ChangeDir(p:string)
 {
@@ -152,7 +163,10 @@ export async function GitDiscardAllChanges() : Promise<string>
 
 export async function GitCreateBranch(branchName: string) : Promise<string>
 {
-    return GitCmd("checkout -b \"" + branchName + "\"")
+    if(baseBranch == "")
+        return GitCmd("checkout -b \"" + branchName + "\"")
+    else
+        return GitCmd("checkout -b \"" + branchName + "\" " + baseBranch)
 }
 
 export async function GitDiscardFileChanges(fileName: string) : Promise<string>

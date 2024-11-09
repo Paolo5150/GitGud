@@ -1,5 +1,5 @@
 import { app, BrowserWindow, Menu, ipcMain, dialog } from 'electron';
-import { ChangeDir, GitAddAllChanges, GitAddAllUntrackedFiles, GitBranchList, GitBranchName, GitChangeList,  GitCheckoutBranch,  GitCheckoutTrackBranch,  GitCommitStaged, GitCreateBranch, GitDeleteAllUntrackedFiles, GitDeleteLocalBranch, GitDeleteUntrackedFile, GitDiffFile, GitDiscardAllChanges, GitDiscardFileChanges, GitIsRepoValid, GitLaunchDifftoolOnOfile, GitLog, GitMergeBranch, GitPull, GitPushBranch, GitSetOrigin, GitStagedList, GitStageFile, GitStatus, GitTopLevel, GitUnstageFile, GitUntrackedFiles, OpenRepoInExplorer, ReadFile } from './gitcmds';
+import { ChangeDir,  GitAddAllChanges, GitAddAllUntrackedFiles, GitBranchList, GitBranchName, GitChangeList,  GitCheckoutBranch,  GitCheckoutTrackBranch,  GitCommitStaged, GitCreateBranch, GitDeleteAllUntrackedFiles, GitDeleteLocalBranch, GitDeleteUntrackedFile, GitDiffFile, GitDiscardAllChanges, GitDiscardFileChanges, GitIsRepoValid, GitLaunchDifftoolOnOfile, GitLog, GitMergeBranch, GitPull, GitPushBranch, GitSetOrigin, GitStagedList, GitStageFile, GitStatus, GitTopLevel, GitUnstageFile, GitUntrackedFiles, OpenRepoInExplorer, ReadFile, ResetBaseBranch, SetBaseBranch } from './gitcmds';
 import { FSWatcher } from 'chokidar';
 import { OpenBranchesDialog, OpenBranchNameDialog, OpenCommitDialog, OpenSetOriginDialog } from './SideWindows';
 const chokidar = require('chokidar');
@@ -50,6 +50,7 @@ const CreateMenu = ()=>{
               {
                 label: 'Create New',
                 click: async ()=>{
+                  ResetBaseBranch()
                   OpenBranchNameDialog(MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY)
                 }
               },
@@ -542,6 +543,15 @@ ipcMain.handle('checkout-track-branch', async (event, branchName: string, dialog
       mainWindow.webContents.send('log',"Error while checking out branch " + error, 'e')
       return false;
     }
+})
+
+ipcMain.handle('checkout-new-branch-from', async (event, branchName: string, dialogWindow: Electron.BrowserWindow)=>
+  { 
+    mainWindow.webContents.send('log',"New branch from " + branchName, 'e')
+    SetBaseBranch(branchName)
+    OpenBranchNameDialog(MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY)
+    ResetBaseBranch()
+
 })
 
 ipcMain.handle('delete-local-branch', async (event, branchName: string, dialogWindow: Electron.BrowserWindow)=>

@@ -86,7 +86,7 @@
                     checkoutNewButton.classList.add('branch-button');
                     checkoutNewButton.title = 'Checkout New Branch from this';
                     checkoutNewButton.innerHTML = '🆕'; 
-                    //checkoutNewButton.onclick = () => trackBranch(branch);
+                    checkoutNewButton.onclick = () => newBranchFrom(branch);
                     
                     // Merge button                  
                     const mergeButton = document.createElement('button');
@@ -139,6 +139,12 @@
             if (currentBranchName !== branchName) {
                 await window.dialogAPI.trackBranch(branchName, window);
                 fetchBranches(false);
+            }
+        }
+
+        async function newBranchFrom(branchName) {
+            if (currentBranchName !== branchName) {
+                await window.dialogAPI.newBranchFrom(branchName, window);
             }
         }
 
