@@ -1,7 +1,7 @@
 import {exec} from 'child_process'
 import { ipcMain } from 'electron';
 import { shell } from 'electron'
-
+import { promises as fs } from 'fs';
 var currentPath:string;
 var baseBranch: string; //Used for checking out new branches: if empty, git checkout will branch off current branch, otherwise will branch off whatever name this var is set to
 
@@ -202,15 +202,12 @@ export async function OpenRepoInExplorer()
     }
 }
 
-export async function ReadFile(fileName: string) : Promise<string>
-{
-    return new Promise<string>((resolve, reject) => {
-        exec(`cat \"${fileName}\"`, {cwd: currentPath}, (error: Error | null, stdout: string, stderr: string) => {
-            if (error) {
-                reject(``);
-            } else {
-                resolve(stdout.trim());
-            }
-        });
-    });
+export async function ReadFile(fileName: string): Promise<string> {
+    try {
+        const data = await fs.readFile(fileName, 'utf8');
+        return data.trim();
+    } catch (error) {
+        console.error('Error reading file ' + fileName, error);
+        throw error;
+    }
 }

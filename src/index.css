@@ -156,7 +156,7 @@ h2, h3 {
   height: 100%; /* Full height for scrolling */
   width: 500px;
   font-size: 0.9em; /* Smaller font for the diff area */
-    max-height: 650px; /* Adjust as needed for the scroll area height */
+    max-height: 750px; /* Adjust as needed for the scroll area height */
     line-height: 1.4; /* Better readability for smaller font */
 }
 
