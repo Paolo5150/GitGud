@@ -22,6 +22,7 @@ interface MainWindowAPI {
     clickedUntrackedFile: (fileName: string) => void;
     clickedChangedFile: (fileName: string) => void;
     clickedStagedFile: (fileName: string) => void;
+    clickedCommitHash: (hash: string) => void;
     clickedCommitBtn: () => void;
     clickedAddAllBtn:() => void;
     clickedAddAllUntrackedBtn:() => void;
@@ -101,6 +102,8 @@ const mainWindowAPI: MainWindowAPI = {
         ipcRenderer.send('clicked-changed-file', fileName),
     clickedStagedFile: (fileName: string) => 
         ipcRenderer.send('clicked-staged-file', fileName),
+    clickedCommitHash: (hash: string) => 
+        ipcRenderer.send('clicked-commit-hash', hash),
     clickedCommitBtn: () => 
         ipcRenderer.send('clicked-commit-btn'),
     clickedAddAllBtn:() => 

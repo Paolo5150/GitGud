@@ -350,6 +350,37 @@ ipcMain.on('clicked-staged-file', (event, fileName: string)=>
     }
   })
 
+  ipcMain.on('clicked-commit-hash', (event, hash: string)=>
+    { 
+      try{
+         dialog.showMessageBox(mainWindow, {
+          type: 'info', 
+          title: 'Alert',
+          message: 'Are you sure you want to checkout this commit?',
+          buttons: ['OK', 'Cancel'], 
+        }).then(async result => {
+          if(result.response == 0)
+          {
+            const match = hash.match(/^\b[0-9a-f]{40}\b/);
+            var actualHash =  match ? match[0] : null;
+            mainWindow.webContents.send('log',"Checking out commit " + actualHash,'i')
+            await GitCheckoutBranch(actualHash)
+            Refresh();
+            mainWindow.webContents.send('log',"-- Check out ok",'i')
+
+            return true;
+          }
+        }).catch(err => {
+        });
+        
+  
+        Refresh();
+      }catch(error) {
+        mainWindow.webContents.send('log',"Error while unstaging file " + error, 'e')
+        
+      }
+    })
+
 
 
 ipcMain.on('clicked-changed-file', async (event, fileName: string)=>
@@ -399,6 +430,8 @@ async function Refresh(){
   try
   {
     var name = await GitBranchName();
+    if(name == 'HEAD')
+      name = 'HEAD (detached)' //Adjustment for detached state
     mainWindow.webContents.send('update-branch-name',name)
   }
   catch(error)

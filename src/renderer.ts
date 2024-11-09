@@ -263,14 +263,12 @@ window.electronAPI.onUpdateUntrackedList((message: string) => {
 });
 
 window.electronAPI.onUpdateLogList((message: string) => {
-    const n = document.getElementById('commitsList') as HTMLUListElement; // Ensure this is an UL element
+    const n = document.getElementById('commitsList') as HTMLUListElement;
 
-    // Split the message into separate commit entries by the keyword "commit "
-    var tokens = message.trim().split(/commit\s+/).filter(entry => entry.trim() !== ""); 
+    const tokens = message.trim().split(/commit\s+/).filter(entry => entry.trim() !== ""); 
     n.innerHTML = ""; // Clear the existing list
 
     tokens.forEach(entry => {
-        // Split the commit entry into its components based on line breaks
         const lines = entry.trim().split('\n');
 
         const hash = lines[0]; // Commit hash line
@@ -280,10 +278,16 @@ window.electronAPI.onUpdateLogList((message: string) => {
 
         const listItem = document.createElement('li');
 
-        // Create and style each part
-        const hashElement = document.createElement('span');
+        // Create a clickable hash element
+        const hashElement = document.createElement('a');
         hashElement.className = 'commitListHash';
         hashElement.textContent = hash;
+        hashElement.href = "#"; // Replace with the actual URL if available
+        hashElement.onclick = (event) => {
+            event.preventDefault();
+            console.log(`Commit hash clicked: ${hash}`);
+            window.electronAPI.clickedCommitHash(listItem.innerText)
+        };
 
         const authorElement = document.createElement('span');
         authorElement.className = 'commitListAuthor';
@@ -297,7 +301,7 @@ window.electronAPI.onUpdateLogList((message: string) => {
         messageElement.className = 'commitListMessage';
         messageElement.textContent = message;
 
-        // Append styled elements to the list item, each on a new line
+        // Append elements to the list item
         listItem.appendChild(hashElement);
         listItem.appendChild(document.createElement('br')); // Line break after hash
         listItem.appendChild(authorElement);
