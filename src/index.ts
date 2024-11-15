@@ -97,8 +97,11 @@ const CreateMenu = ()=>{
               {
                 label: 'Fetch',
                 click: async ()=>{
+                  mainWindow.webContents.send('log',"Fetching...", 'i')
                   await GitFetch();
                   Refresh();
+                  mainWindow.webContents.send('log',"-- Fetched", 'i')
+
                 }
               },
               {
