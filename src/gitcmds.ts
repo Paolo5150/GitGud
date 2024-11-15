@@ -39,7 +39,7 @@ function enqueue(command: string): Promise<string> {
 }
 
 async function processQueue() {
-    var dataReceived: boolean = false;
+    //var dataReceived: boolean = false;
 
     if (isProcessing || cmdQueue.length === 0) {
         return;
@@ -56,7 +56,7 @@ async function processQueue() {
         let errorOutput = ''; // Collect stderr data
 
         gitProcess.stdout.on('data', (data) => {
-            dataReceived = true;
+            //dataReceived = true;
             output += data.toString(); // Append chunk to output
         });
 
