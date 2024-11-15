@@ -105,6 +105,11 @@ window.electronAPI.onUpdateBranchName((message: string) => {
     n.innerHTML = message 
 })
 
+window.electronAPI.onUpdateBranchStatus((message: string) => {
+    const n = document.getElementById('branchStatus') as HTMLTextAreaElement
+    n.innerHTML = message 
+})
+
 window.electronAPI.onUpdateChangeList((message: string) => {
     const n = document.getElementById('changesList') as HTMLUListElement; // Corrected type to HTMLUListElement
     n.innerHTML = ""; // Clear previous list items

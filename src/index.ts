@@ -1,5 +1,5 @@
 import { app, BrowserWindow, Menu, ipcMain, dialog } from 'electron';
-import { ChangeDir,  GitAddAllChanges, GitAddAllUntrackedFiles, GitBranchList, GitBranchName, GitChangeList,  GitCheckoutBranch,  GitCheckoutTrackBranch,  GitCommitCount,  GitCommitStaged, GitCreateBranch, GitDeleteAllUntrackedFiles, GitDeleteLocalBranch, GitDeleteUntrackedFile, GitDiffFile, GitDiscardAllChanges, GitDiscardFileChanges, GitIsRepoValid, GitLaunchDifftoolOnOfile, GitLog, GitMergeBranch, GitPull, GitPushBranch, GitSetOrigin, GitStagedList, GitStageFile, GitStatus, GitTopLevel, GitUnstageFile, GitUntrackedFiles, OpenRepoInExplorer, ReadFile, ResetBaseBranch, SetBaseBranch } from './gitcmds';
+import { ChangeDir,  GitAddAllChanges, GitAddAllUntrackedFiles, GitBranchList, GitBranchName, GitChangeList,  GitCheckoutBranch,  GitCheckoutTrackBranch,  GitCommitCount,  GitCommitStaged, GitCreateBranch, GitDeleteAllUntrackedFiles, GitDeleteLocalBranch, GitDeleteUntrackedFile, GitDiffFile, GitDiscardAllChanges, GitDiscardFileChanges, GitIsRepoValid, GitLaunchDifftoolOnOfile, GitLog, GitMergeBranch, GitPull, GitPushBranch, GitSetOrigin, GitStagedList, GitStageFile, GitStatus, GitStatusSB, GitTopLevel, GitUnstageFile, GitUntrackedFiles, OpenRepoInExplorer, ReadFile, ResetBaseBranch, SetBaseBranch } from './gitcmds';
 import { FSWatcher } from 'chokidar';
 import { OpenBranchesDialog, OpenBranchNameDialog, OpenCommitDialog, OpenSetOriginDialog } from './SideWindows';
 const chokidar = require('chokidar');
@@ -499,6 +499,26 @@ async function Refresh(){
   }
 
   try {
+
+    GitStatusSB().then(status => {
+      var tokens = status.split('\n')
+
+      const regex = /\[(ahead \d+|behind \d+|ahead \d+, behind \d+)\]/;
+      const match = tokens[0].match(regex);
+      var status =  match ? match[1] : 'Up-to-date';
+      var sub = tokens[0].substring(3)
+      sub = sub.replace(/\[.*?\]/g, '').trim();
+      mainWindow.webContents.send('update-branch-status', sub + ':-> ' + status);
+      if(status.includes('ahead'))
+        mainWindow.webContents.send('log', 'Your local branch is ahead, you should push your changes', 'w');
+      else if(status.includes('behind'))
+        mainWindow.webContents.send('log', 'Your local branch is behind, you should pull', 'w');
+
+
+    }).catch(error => {
+      mainWindow.webContents.send('log', 'Error for git status ' + error, 'e');
+    });
+
     GitChangeList().then(changelist => {
 
       mainWindow.webContents.send('update-change-list', changelist);

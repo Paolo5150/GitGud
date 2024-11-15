@@ -150,8 +150,12 @@ export async function GitBranchList(remote:boolean) : Promise<string>
 
 export async function GitChangeList() : Promise<string>
 {
-
     return GitCmd("diff --name-only")
+}
+
+export async function GitStatusSB() : Promise<string>
+{
+    return GitCmd("status -sb")
 }
 
 export async function GitCheckoutBranch(branchName: string) : Promise<string>

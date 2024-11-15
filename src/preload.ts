@@ -9,7 +9,9 @@ interface MainWindowAPI {
     updateTitle: (title: string) => void;
     onUpdateTitle: (callback: (message: string) => void) => void;
     updateBranchName: (bname: string) => void;
+    updateBranchStatus: (status: string) => void;
     onUpdateBranchName: (callback: (message: string) => void) => void;
+    onUpdateBranchStatus: (callback: (message: string) => void) => void;
     updateChangeList: (txt: string) => void;
     onUpdateChangeList: (callback: (message: string) => void) => void;
     updateUntrackedList: (txt: string) => void;
@@ -66,7 +68,9 @@ const mainWindowAPI: MainWindowAPI = {
     updateTitle: (title: string) => ipcRenderer.send('update-title', title),
     onUpdateTitle: (callback) => ipcRenderer.on('update-title', (_event, message) => callback(message)),
     updateBranchName: (bname: string) => ipcRenderer.send('update-branch-name', bname),
+    updateBranchStatus: (status: string) => ipcRenderer.send('update-branch-status', status),
     onUpdateBranchName: (callback) => ipcRenderer.on('update-branch-name', (_event, message) => callback(message)),
+    onUpdateBranchStatus: (callback) => ipcRenderer.on('update-branch-status', (_event, message) => callback(message)),
     updateChangeList: (txt: string) => ipcRenderer.send('update-change-list', txt),
     onUpdateChangeList: (callback) => ipcRenderer.on('update-change-list', (_event, message) => callback(message)),
     updateUntrackedList: (txt: string) => ipcRenderer.send('update-untracked-list', txt),
