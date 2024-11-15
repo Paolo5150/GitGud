@@ -330,8 +330,9 @@ ipcMain.on('clicked-confirm-commit', async (event, commitMessage: string) =>
       await GitCommitStaged(commitMessage); 
       mainWindow.webContents.send('log',"-- Commit ok", 'i')
       Refresh();
+      RefreshCommitList();
     }catch(error) {
-      mainWindow.webContents.send('log',"Error while commiting ", 'e')
+      mainWindow.webContents.send('log',"Error while commiting " + error, 'e')
       }    
   })
 

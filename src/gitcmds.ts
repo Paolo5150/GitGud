@@ -3,6 +3,7 @@ import { ipcMain } from 'electron';
 import { shell } from 'electron'
 import { promises as fs } from 'fs';
 import path from 'path'
+import shlex from 'shlex'
 
 var currentPath:string;
 var baseBranch: string; //Used for checking out new branches: if empty, git checkout will branch off current branch, otherwise will branch off whatever name this var is set to
@@ -48,8 +49,9 @@ async function processQueue() {
 
     isProcessing = true;
     const { command, resolve, reject } = cmdQueue.shift()!;
-    var args = command.split(' ');
 
+    var args = shlex.split(command);
+    console.log('ARGS: ' + args)
     try {
         var gitProcess = spawn('git', args, { cwd: currentPath });
 

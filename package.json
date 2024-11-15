@@ -44,6 +44,7 @@
   "license": "MIT",
   "dependencies": {
     "chokidar": "^4.0.1",
-    "electron-squirrel-startup": "^1.0.1"
+    "electron-squirrel-startup": "^1.0.1",
+    "shlex": "^2.1.2"
   }
 }
