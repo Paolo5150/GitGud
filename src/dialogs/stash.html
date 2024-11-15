@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Stashes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .stashes-container {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .stash-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .stash-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            transition: background-color 0.3s;
+        }
+
+        .stash-item:hover {
+            background-color: #e0e0e0;
+        }
+
+        .stash-buttons {
+            display: flex;
+            gap: 10px; /* Space between buttons */
+        }
+
+        .stash-button {
+            width: 80px; /* Fixed width for buttons */
+            height: 30px; /* Set a consistent height */
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .apply-button {
+            background-color: green;
+        }
+
+        .apply-button:hover {
+            background-color: darkgreen;
+        }
+
+        .drop-button {
+            background-color: red;
+        }
+
+        .drop-button:hover {
+            background-color: darkred;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Git Stashes</h1>
+        <div class="stashes-container">
+            <ul id="stashList" class="stash-list"></ul>
+        </div>
+    </div>
+
+    <script>
+        
+        async function fetchStash() {
+            const stashes = await window.dialogAPI.getStashList();
+            var tokens = stashes.split('\n');
+
+            const stashList = document.getElementById('stashList');
+            stashList.innerHTML = ''; // Clear previous list
+
+            
+
+            tokens.forEach(stash => {
+                //Extract ID
+                const stashIdRegex = /stash@\{\d+\}/;
+                const stashIdMatch = stash.match(stashIdRegex);
+                var stashId = -1;
+
+                if (stashIdMatch) {     
+                    stashId = stashIdMatch[0];
+                    console.log("Extracted Stash ID:", stashId);
+                } else {
+                    console.log("No stash ID found.");
+                }
+   
+                const listItem = document.createElement('li');
+                listItem.classList.add('stash-item');
+
+                const stashInfo = document.createElement('span');
+                stashInfo.textContent = `${stash}`;
+                
+                const buttons = document.createElement('div');
+                buttons.classList.add('stash-buttons');
+
+                // Apply button
+                const applyButton = document.createElement('button');
+                applyButton.classList.add('stash-button', 'apply-button');
+                applyButton.textContent = 'Apply';
+                applyButton.onclick = () => applyStash(stashId);
+
+                // Drop button
+                const dropButton = document.createElement('button');
+                dropButton.classList.add('stash-button', 'drop-button');
+                dropButton.textContent = 'Drop';
+                dropButton.onclick = () => dropStash(stashId);
+
+                buttons.appendChild(applyButton);
+                buttons.appendChild(dropButton);
+                listItem.appendChild(stashInfo);
+                listItem.appendChild(buttons);
+                stashList.appendChild(listItem);
+            });
+
+        }
+
+        // Functions for apply and drop actions (placeholders for actual Git commands)
+        async function applyStash(stashId) {
+            if(confirm('Are you sure you want to apply these changes?'))
+            {
+                await window.dialogAPI.applyStash(stashId, window);
+                fetchStash();
+            }
+        }
+
+        async function dropStash(stashId) {
+            if(confirm('Are you sure you want to delete these changes?'))
+            {
+                await window.dialogAPI.deleteStash(stashId, window);
+                fetchStash();
+            }
+        }
+
+        fetchStash();
+    </script>
+</body>
+</html>
