@@ -15,6 +15,8 @@ var gitLogEntriesCount = 0;
 var gitLogEntriesRequested = 0;
 const gitLogCommitsToRenderEachTime = 20;
 
+var checkFilesTimeout: string | number | NodeJS.Timeout = null;
+var filesHaveChanged = false
 var isValidRepo: Boolean = false;
 var mainWindow: Electron.BrowserWindow;
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -140,7 +142,7 @@ async function RefreshCommitList()
   console.log('requesting commits ' + gitLogCommitsToRenderEachTime + ' ' + gitLogEntriesRequested)
   //Get commits. these are updated when user scrolls to bottom
    GitLog(gitLogCommitsToRenderEachTime, gitLogEntriesRequested).then(commits => {
-    console.log('RECEIVED ' + commits)
+    //console.log('RECEIVED ' + commits)
     mainWindow.webContents.send('update-log-list', commits);
     gitLogEntriesCount -= gitLogCommitsToRenderEachTime
     gitLogEntriesRequested += gitLogCommitsToRenderEachTime
@@ -559,9 +561,22 @@ async function openFolderPicker() {
         }
       });
 
+      if(checkFilesTimeout !== null)
+        clearTimeout(checkFilesTimeout)
+      
+      checkFilesTimeout = setTimeout(()=>{
+        if(filesHaveChanged)
+        {
+          console.log('--- Refresh time!!!! --- ')
+          Refresh();
+          filesHaveChanged = false;
+        }
+
+      },500)
+
       chokiWathcer.on('all', (event: any, path: any) => {
         console.log("Refresh event: " + event + " path " + path)
-        Refresh();
+        filesHaveChanged = true;
       
       });
 
