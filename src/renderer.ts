@@ -62,7 +62,8 @@ window.electronAPI.onUpdateDiffArea((message: string) => {
     diffArea.innerHTML = formattedDiff;
 })
 
-window.electronAPI.onUpdateLog((message: string, type: string) => {
+function Log(message: string, type: string)
+{
     if(message !== "")
     {
         const logArea = document.getElementById('logArea') as HTMLTextAreaElement; // Cast to HTMLTextAreaElement
@@ -88,6 +89,10 @@ window.electronAPI.onUpdateLog((message: string, type: string) => {
             logArea.scrollTop = logArea.scrollHeight;
         }
     }
+}
+
+window.electronAPI.onUpdateLog((message: string, type: string) => {
+    Log(message, type)
 })
 
 window.electronAPI.onUpdateTitle((message: string) => {
@@ -102,10 +107,10 @@ window.electronAPI.onUpdateBranchName((message: string) => {
 
 window.electronAPI.onUpdateChangeList((message: string) => {
     const n = document.getElementById('changesList') as HTMLUListElement; // Corrected type to HTMLUListElement
+    n.innerHTML = ""; // Clear previous list items
 
-    if (message !== "") {
+    if (message.length > 0) {
         const tokens = message.split('\n');
-        n.innerHTML = ""; // Clear previous list items
 
         tokens.forEach(element => {
             const listItem = document.createElement('li');
@@ -187,9 +192,17 @@ window.electronAPI.onUpdateChangeList((message: string) => {
 
 window.electronAPI.onUpdateUntrackedList((message: string) => {
     const n = document.getElementById('untrackedList') as HTMLUListElement;
+    n.innerHTML = ""; // Clear the existing list
+
+    if(message === "")
+    {
+        addAllUntrackedBtn.style.display = 'none';
+        deleteAllBtn.style.display = 'none';
+        return
+    }
 
     const tokens = message.split('\n');
-    n.innerHTML = ""; // Clear the existing list
+
     
     if(tokens.length > 0)
     {
@@ -202,6 +215,8 @@ window.electronAPI.onUpdateUntrackedList((message: string) => {
         addAllUntrackedBtn.style.display = 'none';
         deleteAllBtn.style.display = 'none';
     }
+
+    
 
     tokens.forEach(element => {
         const listItem = document.createElement('li');
@@ -262,11 +277,28 @@ window.electronAPI.onUpdateUntrackedList((message: string) => {
     });
 });
 
+// Add scroll event listener to detect when at the bottom of the commits list
+const commitsList = document.getElementById('commitsList') as HTMLUListElement;
+
+commitsList.addEventListener('scroll', () => {
+    if (commitsList.scrollTop + commitsList.clientHeight >= commitsList.scrollHeight) {
+
+        window.electronAPI.requestMoreGitLog()
+
+    }
+});
+
 window.electronAPI.onUpdateLogList((message: string) => {
     const n = document.getElementById('commitsList') as HTMLUListElement;
 
+    if(message == 'clear')
+    {
+        n.innerHTML = "";
+        return;
+    }
+
     const tokens = message.trim().split(/commit\s+/).filter(entry => entry.trim() !== ""); 
-    n.innerHTML = ""; // Clear the existing list
+
 
     tokens.forEach(entry => {
         const lines = entry.trim().split('\n');

@@ -15,6 +15,7 @@ export const plugins = [
       { from: 'src/dialogs/branches.html', to: 'dialogs' }, 
       { from: 'src/dialogs/branches.css', to: 'dialogs' }, 
       { from: 'src/dialogs/createBranchDialog.html', to: 'dialogs' }, 
+      { from: 'src/dialogs/stash.html', to: 'dialogs' }, 
 
     ],
   })

@@ -1,5 +1,5 @@
 import { app, BrowserWindow, Menu, ipcMain, dialog } from 'electron';
-import { ChangeDir,  GitAddAllChanges, GitAddAllUntrackedFiles, GitBranchList, GitBranchName, GitChangeList,  GitCheckoutBranch,  GitCheckoutTrackBranch,  GitCommitStaged, GitCreateBranch, GitDeleteAllUntrackedFiles, GitDeleteLocalBranch, GitDeleteUntrackedFile, GitDiffFile, GitDiscardAllChanges, GitDiscardFileChanges, GitIsRepoValid, GitLaunchDifftoolOnOfile, GitLog, GitMergeBranch, GitPull, GitPushBranch, GitSetOrigin, GitStagedList, GitStageFile, GitStatus, GitTopLevel, GitUnstageFile, GitUntrackedFiles, OpenRepoInExplorer, ReadFile, ResetBaseBranch, SetBaseBranch } from './gitcmds';
+import { ChangeDir,  GitAddAllChanges, GitAddAllUntrackedFiles, GitBranchList, GitBranchName, GitChangeList,  GitCheckoutBranch,  GitCheckoutTrackBranch,  GitCommitCount,  GitCommitStaged, GitCreateBranch, GitDeleteAllUntrackedFiles, GitDeleteLocalBranch, GitDeleteUntrackedFile, GitDiffFile, GitDiscardAllChanges, GitDiscardFileChanges, GitIsRepoValid, GitLaunchDifftoolOnOfile, GitLog, GitMergeBranch, GitPull, GitPushBranch, GitSetOrigin, GitStagedList, GitStageFile, GitStatus, GitTopLevel, GitUnstageFile, GitUntrackedFiles, OpenRepoInExplorer, ReadFile, ResetBaseBranch, SetBaseBranch } from './gitcmds';
 import { FSWatcher } from 'chokidar';
 import { OpenBranchesDialog, OpenBranchNameDialog, OpenCommitDialog, OpenSetOriginDialog } from './SideWindows';
 const chokidar = require('chokidar');
@@ -10,7 +10,11 @@ const chokidar = require('chokidar');
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
-var currentRepoPath:string = "";
+
+var gitLogEntriesCount = 0;
+var gitLogEntriesRequested = 0;
+const gitLogCommitsToRenderEachTime = 20;
+
 var isValidRepo: Boolean = false;
 var mainWindow: Electron.BrowserWindow;
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -43,7 +47,7 @@ const CreateMenu = ()=>{
             submenu: [
               {
                 label: 'Branches',
-                click: ()=>{OpenBranchesDialog(MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY)}
+                click: ()=>{OpenBranchesDialog(MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY); console.log('preload ' + MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY)}
         
               },
               
@@ -123,6 +127,30 @@ const createWindow = (): void => {
   CreateMenu();
 };
 
+async function RefreshCommitList()
+{
+  console.log('----- RefreshCommitList -----')
+  //Update commit count
+  var commitsCount = await GitCommitCount()
+  gitLogEntriesCount = parseInt(commitsCount);
+  gitLogEntriesRequested = 0;
+  console.log('commits ' + gitLogEntriesCount)
+
+  mainWindow.webContents.send('update-log-list', 'clear')
+  console.log('requesting commits ' + gitLogCommitsToRenderEachTime + ' ' + gitLogEntriesRequested)
+  //Get commits. these are updated when user scrolls to bottom
+   GitLog(gitLogCommitsToRenderEachTime, gitLogEntriesRequested).then(commits => {
+    console.log('RECEIVED ' + commits)
+    mainWindow.webContents.send('update-log-list', commits);
+    gitLogEntriesCount -= gitLogCommitsToRenderEachTime
+    gitLogEntriesRequested += gitLogCommitsToRenderEachTime
+    console.log('remaining commits ' + gitLogEntriesCount)
+
+  }).catch(error => {
+    mainWindow.webContents.send('log', 'Error for git log ' + error, 'e');
+  });
+}
+
 ipcMain.on('clicked-launch-difftool-btn', async (event, commitMessage: string) =>
 {     
     
@@ -192,8 +220,16 @@ ipcMain.on('clicked-delete-all-btn', async (event) =>
 
 ipcMain.on('clicked-difftool-file', async (event, fileName: string) =>
   {     
-      await GitLaunchDifftoolOnOfile(fileName);
-      Refresh();        
+      try
+      {
+        await GitLaunchDifftoolOnOfile(fileName);
+      }
+      catch(error)
+      {
+        mainWindow.webContents.send('log',"Failed to launch difftool:\n" + error, 'e')
+
+      }
+     
   })
 
   ipcMain.on('clicked-delete-file', async (event, fileName: string) =>
@@ -276,7 +312,7 @@ ipcMain.on('clicked-add-file', async (event, filename: string) =>
 
       Refresh();
     }catch(error) {
-      mainWindow.webContents.send('log',"Error while staging " + filename, 'e')
+      mainWindow.webContents.send('log',"Error while staging " + filename, 'e' + '\n' + error)
       mainWindow.webContents.send('log',"-- Recommendation: discard changes to this file", 'w')    
     }
   })
@@ -303,6 +339,7 @@ ipcMain.on('clicked-confirm-branch-name', async (event, branchName: string) =>
         await GitCreateBranch(branchName); 
         mainWindow.webContents.send('log',"-- Branch created ", 'i')
         Refresh();
+        RefreshCommitList()
     }catch(error) {
         mainWindow.webContents.send('log',"Error while creating new branch: " + error, 'e')
     }    
@@ -327,8 +364,9 @@ ipcMain.on('clicked-untracked-file', async (event, fileName: string)=>
     try{
       mainWindow.webContents.send('log',"Reading file " + fileName,'i')
       var content = await ReadFile(fileName); 
-      mainWindow.webContents.send('update-diff-area',content) //Clear diff area
       mainWindow.webContents.send('log',"-- Reading file ok" ,'i')
+      mainWindow.webContents.send('update-diff-area',content)
+      
 
       Refresh();
     }catch(error) {
@@ -339,9 +377,9 @@ ipcMain.on('clicked-untracked-file', async (event, fileName: string)=>
 ipcMain.on('clicked-staged-file', (event, fileName: string)=>
   { 
     try{
-      mainWindow.webContents.send('log',"Staging file " + fileName,'i')
+      mainWindow.webContents.send('log',"Unstaging file " + fileName,'i')
       GitUnstageFile(fileName); 
-      mainWindow.webContents.send('log',"-- Staging file ok" ,'i')
+      mainWindow.webContents.send('log',"-- Unstaging file ok" ,'i')
 
       Refresh();
     }catch(error) {
@@ -381,6 +419,23 @@ ipcMain.on('clicked-staged-file', (event, fileName: string)=>
       }
     })
 
+ipcMain.on('request-log-list', async (event, fileName: string)=>
+  { 
+    console.log('getting more git logs')
+    if(gitLogEntriesCount > 0)
+    {
+      GitLog(gitLogCommitsToRenderEachTime, gitLogEntriesRequested).then(commits => {
+        mainWindow.webContents.send('update-log-list', commits);
+        gitLogEntriesCount -= gitLogCommitsToRenderEachTime
+        gitLogEntriesRequested += gitLogCommitsToRenderEachTime
+        console.log('remaining commits ' + gitLogEntriesCount)
+  
+      }).catch(error => {
+        mainWindow.webContents.send('log', 'Error for git log ' + error, 'e');
+      });
+    }
+
+  })
 
 
 ipcMain.on('clicked-changed-file', async (event, fileName: string)=>
@@ -427,9 +482,10 @@ app.on('activate', () => {
 // code. You can also put them in separate files and import them here.
 
 async function Refresh(){
+
   try
   {
-    var name = await GitBranchName();
+    var name = await (await GitBranchName()).toString();
     if(name == 'HEAD')
       name = 'HEAD (detached)' //Adjustment for detached state
     mainWindow.webContents.send('update-branch-name',name)
@@ -439,19 +495,39 @@ async function Refresh(){
     mainWindow.webContents.send('update-branch-name','master')
     mainWindow.webContents.send('log','Looks like there are no commits, is this a fresh repo?', 'w')
   }
+
+  try {
+    GitChangeList().then(changelist => {
+
+      mainWindow.webContents.send('update-change-list', changelist);
+    }).catch(error => {
+     console.log('change error ' + error)
+
+      mainWindow.webContents.send('log', 'Error for git change list ' + error, 'e');
+    });
+  
+    GitUntrackedFiles().then(untracked => {
+      mainWindow.webContents.send('update-untracked-list', untracked);
+    }).catch(error => {
+     console.log('change error ' + error)
+
+      mainWindow.webContents.send('log', 'Error for git untracked files ' + error, 'e');
+    });
+  
+    GitStagedList().then(staged => {
+      mainWindow.webContents.send('update-staged-list', staged);
+    }).catch(error => {
+     console.log('change error ' + error)
+
+      mainWindow.webContents.send('log', 'Error for git staged list ' + error, 'e');
+    });
   
 
-  var changelist = await GitChangeList()
-  mainWindow.webContents.send('update-change-list',changelist)
-
-  var untracked = await GitUntrackedFiles();
-  mainWindow.webContents.send('update-untracked-list',untracked)
-
-  var staged = await GitStagedList();
-  mainWindow.webContents.send('update-staged-list',staged)
-
-  var commits = await GitLog();
-  mainWindow.webContents.send('update-log-list',commits)
+  } catch (error) {
+    console.log('Refresh error ' + error)
+    mainWindow.webContents.send('log', 'Unexpected error ' + error, 'e');
+  }
+  
 }
 
 ///Pick folder to repo
@@ -472,9 +548,10 @@ async function openFolderPicker() {
       //Start watcher
       chokiWathcer = chokidar.watch(selectedFolderPath, {
         persistent: true,
+        ignored: /(^|[\/\\])\.(git|.gitlab|node_modules|ignored_folder)/,
         ignoreInitial: true, // Ignore initial add events
         usePolling: true, // Use polling instead of native events for better compatibility
-        interval: 100, // Polling interval (in milliseconds)
+        interval: 500, // Polling interval (in milliseconds)
         binaryInterval: 300, // Polling interval for binary files
         awaitWriteFinish: { // Wait for the file write to finish
             stabilityThreshold: 1000, // Wait for 1 second after a write
@@ -483,19 +560,25 @@ async function openFolderPicker() {
       });
 
       chokiWathcer.on('all', (event: any, path: any) => {
-        console.log("Refresh")
+        console.log("Refresh event: " + event + " path " + path)
         Refresh();
       
       });
 
-      var title = await GitTopLevel();
-      var tokens = title.split('/')
+      var title = await (await GitTopLevel()).toString();
+      console.log('Recieved ' + typeof title)
+      var tokens = title.split('\\')
       var name = tokens.at(tokens.length -1)
       mainWindow.webContents.send('update-title',name)
+
+
+      //Update commit count
+      await RefreshCommitList();
       
     }
     catch(error)
     {
+      console.log('Error ' + error)
       dialog.showMessageBox(mainWindow, {
         type: 'info', // Type of dialog (info, error, question, etc.)
         title: 'Alert',
@@ -541,6 +624,10 @@ ipcMain.handle('checkout-branch', async (event, branchName: string, dialogWindow
           mainWindow.webContents.send('log',"Checking out branch " + branchName,'i')
           await GitCheckoutBranch(branchName)
           mainWindow.webContents.send('log',"-- Checking out ok " + branchName,'i')
+
+          //Update commit count
+          await RefreshCommitList();
+
           return true;
         }
       }).catch(err => {
@@ -566,6 +653,8 @@ ipcMain.handle('checkout-track-branch', async (event, branchName: string, dialog
           mainWindow.webContents.send('log',"Checking out and tracking branch " + branchName,'i')
           await GitCheckoutTrackBranch(branchName)
           mainWindow.webContents.send('log',"-- Checking out ok " ,'i')
+
+          
 
           return true;
         }

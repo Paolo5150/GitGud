@@ -1,22 +1,25 @@
+/* General Styles */
 * {
   box-sizing: border-box;
 }
 
 html, body {
-  height: 100%; /* Ensure html and body take full height */
-  margin: 0; /* Remove default margin */
+  height: 100%;
+  margin: 0;
   font-family: Arial, sans-serif;
   background-color: #f4f4f4;
+  font-size: 13px; /* Smaller font size */
 }
 
+/* Container */
 .container {
-  max-width: 1600px;
-  height: 100%; /* Set the height to 100% of the viewport */
-  margin: 0 auto; /* Center the container horizontally */
+  max-width: 1920px;
+  height: 100%;
+  margin: 0 auto;
   padding: 20px;
   display: flex;
-  flex-direction: column; /* Stack children vertically */
-  background: white;
+  flex-direction: column;
+  background: rgb(166, 166, 166);
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
@@ -26,35 +29,127 @@ h1 {
   color: #333;
 }
 
+/* Main Content */
 .main-content {
-  display: flex; /* Flexbox layout for left and right areas */
-  flex-grow: 1; /* Allow this section to grow and fill the available space */
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden; /* Prevent overflow */
 }
 
+/* Left Area */
 .left-area {
-  flex: 1; /* Take up space for the left area */
-  margin: 10px; /* Margin between the areas */
+  flex: 1 1 15%; /* Reduced size for commit area */
+  margin: 10px;
   padding: 15px;
   border: 1px solid #ddd;
   border-radius: 5px;
   background-color: #fafafa;
+  display: flex;
+  flex-direction: column;
 }
 
+/* Branch Info */
+.branch-info {
+  flex-grow: 1; /* Allow branch-info to grow and fill space */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Prevent overflow */
+}
+
+#commitsList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1; /* Allow commitsList to grow and fill space */
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+#commitsList li {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+#commitsList li:last-child {
+  border-bottom: none;
+}
+
+/* Right Area */
 .right-area {
-  display: flex; /* Flexbox for right area */
-  flex: 2; /* Take more space than the left area */
-  margin: 10px; /* Margin between the areas */
+  display: flex;
+  flex: 1 1 85%; /* Increased size for right area */
+  margin: 10px;
 }
 
+/* Changes Container */
 .changes-container {
-  flex: 1; /* Changes container takes up 1 part of the right area */
-  margin-right: 10px; /* Space between changes container and diffs area */
+  flex: 1 1 30%; /* Reduced size for changes/untracked area */
+  margin-right: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
+/* Diffs Area */
 .diffs-area {
-  flex: 1; /* Diffs area takes up 1 part of the right area */
+  flex: 1 1 70%; /* Increased size for diff area */
+  background-color: #fafafa;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
+.diff-content {
+  white-space: pre;
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  height: 100%;
+  width: 100%; /* Ensure it takes 100% width of the diff area */
+  font-size: 0.9em; /* Smaller font for the diff area */
+  max-height: 100%; /* Ensure it doesn't grow beyond available space */
+  line-height: 1.4; /* Better readability for smaller font */
+  flex-grow: 1; /* Allow diff-content to grow and fill space */
+}
+
+/* Diff Highlighting */
+.diff-header {
+  color: #00f; /* Blue for the 'diff --git' line */
+  font-weight: bold;
+}
+
+.diff-index {
+  color: #999; /* Grey for the 'index' line */
+  font-style: italic;
+}
+
+.diff-file {
+  color: #070; /* Green for file path lines (--- and +++) */
+  font-weight: bold;
+}
+
+.diff-hunk {
+  color: #b36b00; /* Orange for hunk headers */
+  font-weight: bold;
+}
+
+.diff-addition {
+  color: #228B22; /* Green for additions */
+  background-color: #eaffea;
+  display: block;
+}
+
+.diff-deletion {
+  color: #d9534f; /* Red for deletions */
+  background-color: #ffebeb;
+  display: block;
+}
+
+.diff-context {
+  color: #333; /* Dark grey for unchanged lines */
+  display: block;
+}
+
+/* Common Section Styles */
 .repo-info, .branch-info, .changes-info, .untracked-info, .staged-info {
   margin-bottom: 20px;
 }
@@ -64,124 +159,39 @@ h2, h3 {
   color: #444;
 }
 
-#commitsList {
-  list-style-type: none;
-  padding: 0;
-  max-height: 720px; 
-  overflow-y: auto; 
-}
-
+/* Changes Info */
 #changesList, #untrackedList, #stagedList {
   list-style-type: none;
   padding: 0;
-  max-height: 250px; /* Set a maximum height */
-  overflow-y: auto; /* Enable vertical scrolling */
-}
-
-.commitListHash {
-  font-weight: bold; /* Makes the commit hash bold */
-  color: #2e8bff; /* Change to a blue color for emphasis */
-}
-
-.commitListAuthor {
-  font-style: italic; /* Italicizes the author */
-  color: #666; /* A muted color for author */
-  margin-left: 10px; /* Adds some spacing from the hash */
-}
-
-.commitListDate {
-  color: #999; /* A lighter color for the date */
-  margin-left: 10px; /* Adds spacing from the author */
-}
-
-.commitListMessage {
-  display: block; /* Makes message appear on a new line */
-  margin-top: 5px; /* Adds some space above the message */
-  color: #333; /* Default text color */
-  padding-left: 20px; /* Indentation for clarity */
-}
-
-#commitsList li, #changesList li, #untrackedList li, #stagedList li {
-  padding: 8px;
-  border-bottom: 1px solid #ddd;
-}
-
-#commitsList li:last-child, #changesList li:last-child, #untrackedList li:last-child, #stagedList li:last-child {
-  border-bottom: none;
+  max-height: 250px;
+  overflow-y: auto;
 }
 
 .changes-info, .untracked-info, .staged-info {
-  margin-bottom: 10px; /* Space between the sections */
-  background-color: #fafafa; /* Add background color for each section */
-  padding: 10px; /* Add padding for better spacing */
-  border: 1px solid #ddd; /* Optional: add border for separation */
-  border-radius: 5px; /* Optional: round corners */
+  margin-bottom: 10px;
+  background-color: #fafafa;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
 }
 
+/* Logs */
 .logs {
   width: 100%;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  min-height: 60px; /* Ensure at least 3 lines height (assuming line height) */
-  max-height: 200px; /* Set max height to enable scrolling */
-  overflow-y: auto; /* Enable vertical scrollbar when overflowing */
+  min-height: 60px;
+  max-height: 200px;
+  overflow-y: auto;
   resize: none;
   font-family: monospace;
   background-color: #f9f9f9;
   color: #333;
-  margin-top: 20px; /* Space between the main content and log area */
+  margin-top: 20px;
 }
 
-#commitBtn {
-  background-color: #4CAF50; /* Green */
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 10px; /* Space above the button */
-}
-
-#commitBtn:hover {
-  background-color: #45a049; /* Darker green on hover */
-}
-
-.diff-content {
-  white-space: pre; /* Preserve whitespace for diffs */
-  overflow-y: auto; /* Enable scrolling within this section */
-  padding: 10px; /* Padding for better visual */
-  border: 1px solid #ddd; /* Optional border */
-  border-radius: 5px; /* Optional round corners */
-  height: 100%; /* Full height for scrolling */
-  width: 500px;
-  font-size: 0.9em; /* Smaller font for the diff area */
-    max-height: 750px; /* Adjust as needed for the scroll area height */
-    line-height: 1.4; /* Better readability for smaller font */
-}
-
-#untrackedList li, #stagedList li, #changesList li {
-  padding: 8px; /* Add padding for better touch target */
-  cursor: pointer; /* Change cursor to pointer on hover */
-  transition: background-color 0.3s; /* Smooth transition for background color */
-}
-
-#untrackedList li.hovered, #stagedList li.hovered, #changesList li.hovered {
-  background-color: #e0e0e0; /* Change background color on hover */
-}
-
-.log-info {
-  color: black;
-}
-
-.log-warning {
-  color: orange;
-}
-
-.log-error {
-  color: red;
-}
-
+/* Buttons */
 .button-group {
   display: flex; /* Arrange buttons in a row */
   gap: 10px; /* Space between buttons */
@@ -215,17 +225,21 @@ h2, h3 {
   opacity: 0.8; /* Change opacity on hover for feedback */
 }
 
-.change-item {
-  display: flex; /* Align file name and buttons in a row */
-  justify-content: space-between; /* Space between file name and buttons */
-  align-items: center; /* Center vertically */
-  margin: 5px 0; /* Add some vertical spacing */
+#commitBtn {
+  background-color: #4CAF50; /* Green */
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px; /* Space above the button */
 }
 
-.file-name {
-  flex-grow: 1; /* Allow the file name to take available space */
+#commitBtn:hover {
+  background-color: #45a049; /* Darker green on hover */
 }
 
+/* Buttons for changes and difftool */
 .change-buttons {
   display: flex; /* Arrange buttons in a row */
   gap: 5px; /* Space between buttons */
@@ -268,39 +282,48 @@ h2, h3 {
   transition: background-color 0.3s ease; /* Smooth transition for background color */
 }
 
-.diff-header {
-  color: #00f; /* Blue for the 'diff --git' line */
+/* Miscellaneous */
+.commitListHash {
   font-weight: bold;
+  color: #2e8bff;
 }
 
-.diff-index {
-  color: #999; /* Grey for the 'index' line */
+.commitListAuthor {
   font-style: italic;
+  color: #666;
+  margin-left: 10px;
 }
 
-.diff-file {
-  color: #070; /* Green for file path lines (--- and +++) */
-  font-weight: bold;
+.commitListDate {
+  color: #999;
+  margin-left: 10px;
 }
 
-.diff-hunk {
-  color: #b36b00; /* Orange for hunk headers */
-  font-weight: bold;
-}
-
-.diff-addition {
-  color: #228B22; /* Green for additions */
-  background-color: #eaffea;
+.commitListMessage {
   display: block;
+  margin-top: 5px;
+  color: #333;
+  padding-left: 20px;
 }
 
-.diff-deletion {
-  color: #d9534f; /* Red for deletions */
-  background-color: #ffebeb;
-  display: block;
+#untrackedList li, #stagedList li, #changesList li {
+  padding: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-.diff-context {
-  color: #333; /* Dark grey for unchanged lines */
-  display: block;
+#untrackedList li:hover, #stagedList li:hover, #changesList li:hover {
+  background-color: #e0e0e0;
+}
+
+.log-info {
+  color: black;
+}
+
+.log-warning {
+  color: orange;
+}
+
+.log-error {
+  color: red;
 }
