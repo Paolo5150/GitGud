@@ -1,5 +1,5 @@
 import { app, BrowserWindow, Menu, ipcMain, dialog } from 'electron';
-import { ChangeDir,  GitAddAllChanges, GitAddAllUntrackedFiles, GitBranchList, GitBranchName, GitChangeList,  GitCheckoutBranch,  GitCheckoutTrackBranch,  GitCommitCount,  GitCommitStaged, GitCreateBranch, GitDeleteAllUntrackedFiles, GitDeleteLocalBranch, GitDeleteUntrackedFile, GitDiffFile, GitDiscardAllChanges, GitDiscardFileChanges, GitIsRepoValid, GitLaunchDifftoolOnOfile, GitLog, GitMergeBranch, GitPull, GitPushBranch, GitSetOrigin, GitStagedList, GitStageFile, GitStatus, GitStatusSB, GitTopLevel, GitUnstageFile, GitUntrackedFiles, OpenRepoInExplorer, ReadFile, ResetBaseBranch, SetBaseBranch } from './gitcmds';
+import { ChangeDir,  GitAddAllChanges, GitAddAllUntrackedFiles, GitBranchList, GitBranchName, GitChangeList,  GitCheckoutBranch,  GitCheckoutTrackBranch,  GitCommitCount,  GitCommitStaged, GitCreateBranch, GitDeleteAllUntrackedFiles, GitDeleteLocalBranch, GitDeleteUntrackedFile, GitDiffFile, GitDiscardAllChanges, GitDiscardFileChanges, GitFetch, GitIsRepoValid, GitLaunchDifftoolOnOfile, GitLog, GitMergeBranch, GitPull, GitPushBranch, GitSetOrigin, GitStagedList, GitStageFile, GitStatus, GitStatusSB, GitTopLevel, GitUnstageFile, GitUntrackedFiles, OpenRepoInExplorer, ReadFile, ResetBaseBranch, SetBaseBranch } from './gitcmds';
 import { FSWatcher } from 'chokidar';
 import { OpenBranchesDialog, OpenBranchNameDialog, OpenCommitDialog, OpenSetOriginDialog } from './SideWindows';
 const chokidar = require('chokidar');
@@ -94,6 +94,13 @@ const CreateMenu = ()=>{
           {
             label: 'Repo',
             submenu: [
+              {
+                label: 'Fetch',
+                click: async ()=>{
+                  await GitFetch();
+                  Refresh();
+                }
+              },
               {
                 label: 'Set Remote Address',
                 click: ()=>{OpenSetOriginDialog(MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY)}

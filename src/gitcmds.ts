@@ -11,8 +11,6 @@ var baseBranch: string; //Used for checking out new branches: if empty, git chec
 var cmdQueue: { command: string, resolve: (value: string) => void, reject: (reason?: any) => void }[] = [];
 var isProcessing: boolean = false;
 
-
-
 export function ChangeDir(p:string)
 {
     currentPath = p;
@@ -139,6 +137,11 @@ export async function GitPushBranch(branchName: string) : Promise<string>
 export async function GitPull() : Promise<string>
 {
     return GitCmd("pull")
+}
+
+export async function GitFetch() : Promise<string>
+{
+    return GitCmd("fetch")
 }
 
 export async function GitBranchList(remote:boolean) : Promise<string>
