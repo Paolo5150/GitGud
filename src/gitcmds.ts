@@ -51,7 +51,6 @@ async function processQueue() {
     const { command, resolve, reject } = cmdQueue.shift()!;
 
     var args = shlex.split(command);
-    console.log('ARGS: ' + args)
     try {
         var gitProcess = spawn('git', args, { cwd: currentPath });
 
