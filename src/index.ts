@@ -675,7 +675,8 @@ ipcMain.handle('checkout-branch', async (event, branchName: string, dialogWindow
           mainWindow.webContents.send('log',"-- Checking out ok " + branchName,'i')
 
           //Update commit count
-          await RefreshCommitList();
+          Refresh();
+          RefreshCommitList();
 
           return true;
         }
