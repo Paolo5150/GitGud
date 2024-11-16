@@ -95,7 +95,7 @@ export function OpenBrancheFinderDialog(preloadScript: string )
       });
       dialogWindow.loadFile(path.join(__dirname, 'dialogs','branchFinder.html'));
       dialogWindow.setMenu(null);
-      dialogWindow.webContents.openDevTools();
+      //dialogWindow.webContents.openDevTools();
       dialogWindow.once('ready-to-show', () => {
         dialogWindow.show();
     });
