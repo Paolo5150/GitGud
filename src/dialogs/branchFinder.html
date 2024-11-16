@@ -166,10 +166,8 @@
         // Adding Repo Button click event
             document.getElementById("addRepoBtn").addEventListener('click', async () => {
             const webID = window.webID;
-            console.log('id ' + webID);
 
             window.dialogAPI.clickedAddRepo((msgBack) => {
-                console.log('Repo ' + msgBack);
 
                 // Create a new log entry with the message
                 var logEntry = document.createElement('div');

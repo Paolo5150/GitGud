@@ -421,7 +421,6 @@ ipcMain.on('clicked-find-branch', async (event, branchName:string, list:Array<st
                 mainWindow.webContents.send('log', "Found " + name + " in: " + item, 'i');
             }
         }
-
     }
 
     // After the loop, check if no match was found
