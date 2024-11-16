@@ -81,3 +81,25 @@ export function OpenBranchesDialog(preloadScript: string )
       dialogWindow.on('closed', () => {
         });
 }
+
+export function OpenBrancheFinderDialog(preloadScript: string )
+{
+    var dialogWindow = new BrowserWindow({
+        width: 800,
+        height: 600,
+        title: "Branch Finder:",
+        webPreferences: {
+            contextIsolation: true,
+            preload: preloadScript
+        }
+      });
+      dialogWindow.loadFile(path.join(__dirname, 'dialogs','branchFinder.html'));
+      dialogWindow.setMenu(null);
+      dialogWindow.webContents.openDevTools();
+      dialogWindow.once('ready-to-show', () => {
+        dialogWindow.show();
+    });
+      // Optionally, handle the window closed event
+      dialogWindow.on('closed', () => {
+        });
+}

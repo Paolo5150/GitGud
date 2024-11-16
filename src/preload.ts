@@ -41,6 +41,8 @@ interface DialogAPI {
     clickedConfirmOriginURL: (url: string, callback: (response: string) => void) => void;
     clickedConfirmCommit: (commitMessage: string, callback: (response: string) => void) => void;
     clickedConfirmBranchName: (branchName: string, callback: (response: string) => void) => void;
+    clickedAddRepo: ( callback: (response: string) => void) => void;
+    clickedFindBranch:(branchName: string, list:Array<string>) => void;
     getBranchList: (remote: boolean) => Promise<string>;
     checkoutBranch: (branchName: string, dialogWindow: Electron.BrowserWindow) => Promise<boolean>;
     trackBranch: (branchName: string, dialogWindow: Electron.BrowserWindow) => Promise<boolean>;
@@ -110,6 +112,14 @@ const dialogAPI: DialogAPI = {
         ipcRenderer.send('clicked-confirm-branch-name', commitMessage);
         ipcRenderer.once('confirm-branch-name-response', (_event, response) => { callback(response); });
     },
+    clickedAddRepo: ( callback: (response: string) => void) => {
+        ipcRenderer.send('clicked-add-repo');
+        ipcRenderer.once('confirm-repo-name', (_event, response) => { callback(response); });
+    },
+    clickedFindBranch: (branchName:string, list:Array<string>) => {
+        ipcRenderer.send('clicked-find-branch', branchName, list);
+    },
+
     getBranchList: (remote: boolean) => ipcRenderer.invoke('get-branch-list', remote),
     checkoutBranch: async (branchName: string, dialogWindow: Electron.BrowserWindow) => ipcRenderer.invoke('checkout-branch', branchName),
     trackBranch: async (branchName: string, dialogWindow: Electron.BrowserWindow) => ipcRenderer.invoke('checkout-track-branch', branchName),

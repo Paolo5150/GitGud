@@ -21,7 +21,6 @@ discardAllBtn.style.display = 'none';
 addAllUntrackedBtn.style.display = 'none';
 deleteAllBtn.style.display = 'none';
 
-
 document.getElementById('clearLogsBtn').addEventListener('click', ()=>{logArea.innerHTML = ""});
 
 addAllBtn.addEventListener('click', ()=>{ window.electronAPI.clickedAddAllBtn() });

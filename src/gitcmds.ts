@@ -16,6 +16,11 @@ export function ChangeDir(p:string)
     currentPath = p;
 }
 
+export function GetCurrentRepoPath() : string
+{
+    return currentPath;
+}
+
 function ClearQueue() {
     while (cmdQueue.length > 0) {
         const { reject } = cmdQueue.shift()!;
@@ -27,7 +32,7 @@ function ClearQueue() {
 
 function GitCmd(command: string): Promise<string>
 {
-    console.log('submitting cmd: ' + command)
+    //console.log('submitting cmd: ' + command)
     return enqueue(command);
 }
 
