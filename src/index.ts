@@ -399,31 +399,21 @@ ipcMain.on('clicked-find-branch', async (event, branchName:string, list:Array<st
       console.log('Searching for ' + branchName + ' ' + list);
       
       for (const item of list) {
-        await ChangeDir(item); // Wait for ChangeDir to complete
-        console.log('-- Searching in repo: ' + item);
+        ChangeDir(item); 
 
-        // Fetch branch list
         var branches = await GitBranchList(false);
-        console.log('Branches in ' + item + ': ' + branches); // Log the fetched branches
-
-        // Process the branches
         var branchesTokens = branches.split('\n').map(branch => branch.trim()); // Strip spaces from branches
-        console.log('Processed branches for ' + item + ': ', branchesTokens);
 
-        // Prepare the regex for branch name matching
         const branchRegex = new RegExp(branchName, 'i');
         for (const name of branchesTokens) {
-            console.log('---- Checking branch: ' + name);
 
             if (branchRegex.test(name)) {
                 foundSomething = true;
-                console.log(' ---- Found branch: ' + name);
                 mainWindow.webContents.send('log', "Found " + name + " in: " + item, 'i');
             }
         }
     }
 
-    // After the loop, check if no match was found
     if (!foundSomething) {
         mainWindow.webContents.send('log', "Didn't find any match for " + branchName, 'w');
     }
