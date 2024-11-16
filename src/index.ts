@@ -419,7 +419,6 @@ ipcMain.on('clicked-find-branch', async (event, branchName:string, list:Array<st
                 foundSomething = true;
                 console.log(' ---- Found branch: ' + name);
                 mainWindow.webContents.send('log', "Found " + name + " in: " + item, 'i');
-                break; // Stop searching once we find a match in this repo
             }
         }
 
