@@ -638,55 +638,57 @@ async function openFolderPicker() {
 
   if (!result.canceled) {
     const selectedFolderPath = result.filePaths[0]; // Get the selected folder path
-    
-    ChangeDir(selectedFolderPath)
 
     try{
-      isValidRepo = true
-      CreateMenu();
-
-      //Start watcher
-      chokiWathcer = chokidar.watch(selectedFolderPath, {
-        persistent: true,
-        ignored: /(^|[\/\\])\.(git|.gitlab|node_modules|ignored_folder)/,
-        ignoreInitial: true, // Ignore initial add events
-        usePolling: true, // Use polling instead of native events for better compatibility
-        interval: 500, // Polling interval (in milliseconds)
-        binaryInterval: 300, // Polling interval for binary files
-        awaitWriteFinish: { // Wait for the file write to finish
-            stabilityThreshold: 1000, // Wait for 1 second after a write
-            pollInterval: 100 // Polling interval while waiting
-        }
-      });
-
-      if(checkFilesTimeout !== null)
-        clearTimeout(checkFilesTimeout)
-      
-      checkFilesTimeout = setTimeout(()=>{
-        if(filesHaveChanged)
-        {
-          console.log('--- Refresh time!!!! --- ')
-          Refresh();
-          filesHaveChanged = false;
-        }
-
-      },500)
-
-      chokiWathcer.on('all', (event: any, path: any) => {
-        console.log("Refresh event: " + event + " path " + path)
-        filesHaveChanged = true;
-      
-      });
-
+      //Change dir first
+      ChangeDir(selectedFolderPath)
+      //Run top level, so we get the top level of the repo
       var title = await (await GitTopLevel()).toString();
-      console.log('Recieved ' + typeof title)
-      var tokens = title.split('\\')
-      var name = tokens.at(tokens.length -1)
-      mainWindow.webContents.send('update-title',name)
+      //Now change again, to point to the top level
+      ChangeDir(title)
 
+      mainWindow.webContents.send('log',"Repo path: " + title, 'i')
+      
+        isValidRepo = true
+        CreateMenu();
 
-      //Update commit count
-      await RefreshCommitList();
+        //Start watcher
+        chokiWathcer = chokidar.watch(selectedFolderPath, {
+          persistent: true,
+          ignored: /(^|[\/\\])\.(git|.gitlab|node_modules|ignored_folder)/,
+          ignoreInitial: true, // Ignore initial add events
+          usePolling: true, // Use polling instead of native events for better compatibility
+          interval: 500, // Polling interval (in milliseconds)
+          binaryInterval: 300, // Polling interval for binary files
+          awaitWriteFinish: { // Wait for the file write to finish
+              stabilityThreshold: 1000, // Wait for 1 second after a write
+              pollInterval: 100 // Polling interval while waiting
+          }
+        });
+
+        if(checkFilesTimeout !== null)
+          clearTimeout(checkFilesTimeout)
+        
+        checkFilesTimeout = setTimeout(()=>{
+          if(filesHaveChanged)
+          {
+            console.log('--- Refresh time!!!! --- ')
+            Refresh();
+            filesHaveChanged = false;
+          }
+
+        },500)
+
+        chokiWathcer.on('all', (event: any, path: any) => {
+          console.log("Refresh event: " + event + " path " + path)
+          filesHaveChanged = true;
+        
+        });
+
+        mainWindow.webContents.send('update-title',title)
+
+        //Update commit count
+        await RefreshCommitList();
       
     }
     catch(error)
